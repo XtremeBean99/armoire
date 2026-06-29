@@ -41,6 +41,8 @@ export default function AddPage() {
   const [formality, setFormality] = useState<Formality>("casual");
   const [seasons, setSeasons] = useState<Season[]>(["all-season"]);
   const [price, setPrice] = useState<string>("");
+  const [priceError, setPriceError] = useState<string | null>(null);
+  const [seasonError, setSeasonError] = useState<string | null>(null);
   const [pattern, setPattern] = useState<Pattern>("solid");
 
   useEffect(() => {
@@ -53,12 +55,25 @@ export default function AddPage() {
 
   async function save() {
     if (!color) return;
+    // Validate price
+    if (price.trim() !== "") {
+      const n = Number(price);
+      if (!Number.isFinite(n) || n < 0) {
+        setPriceError("Enter a valid price or leave it empty.");
+        return;
+      }
+    }
+    // Require at least one season
+    if (seasons.length === 0) {
+      setSeasonError("Select at least one season.");
+      return;
+    }
     await wardrobeStore.getState().addItem({
       garmentType,
       color,
       formality,
       seasons,
-      pricePaid: price ? Number(price) : undefined,
+      pricePaid: price.trim() ? Number(price) : undefined,
       pattern: pattern !== "solid" ? pattern : undefined,
     });
     router.push("/wardrobe");
@@ -139,23 +154,39 @@ export default function AddPage() {
               <ChipSelect
                 options={SEASONS}
                 value={seasons}
-                onChange={(v) => setSeasons(v as Season[])}
+                onChange={(v) => {
+                  setSeasons(v as Season[]);
+                  setSeasonError(null);
+                }}
                 multiple
               />
+              {seasonError && (
+                <p role="alert" className="text-xs text-red-500">{seasonError}</p>
+              )}
             </Field>
             <Field label="Price (optional)">
               <div className="flex items-center gap-2">
                 <span className="text-muted-foreground">$</span>
                 <input
-                  inputMode="decimal"
+                  type="number"
+                  min="0"
+                  step="0.01"
                   value={price}
-                  onChange={(e) => setPrice(e.target.value)}
+                  onChange={(e) => {
+                    setPrice(e.target.value);
+                    setPriceError(null);
+                  }}
                   placeholder="0.00"
+                  aria-invalid={!!priceError}
+                  aria-describedby={priceError ? "price-error" : undefined}
                   className="w-32 rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition-colors placeholder:text-muted focus:border-muted-foreground"
                 />
               </div>
+              {priceError && (
+                <p id="price-error" role="alert" className="text-xs text-red-500">{priceError}</p>
+              )}
             </Field>
-            <div className="pt-2">
+            <div className="pt-2" aria-live="polite">
               <Button disabled={!color} onClick={save}>
                 Save item
               </Button>
