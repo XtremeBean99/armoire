@@ -21,7 +21,7 @@ export function generateOutfits(items: WardrobeItem[], options: GenerateOptions 
 
   for (const core of cores) {
     const outfit = attachOptional(core, bySlot.outerwear, bySlot.accessory, weather);
-    if (!formalityCoherent(outfitItems(outfit))) {
+    if (!formalityCoherent(outfitItems(outfit)) || !patternCoherent(outfitItems(outfit))) {
       delete outfit.outerwear; delete outfit.accessory;
     }
     const colorScore = outfitColorScore(outfit);

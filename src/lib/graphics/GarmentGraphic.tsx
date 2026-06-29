@@ -303,7 +303,7 @@ export function GarmentGraphic({
   const slot = Object.values(GARMENTS).find((g) => g.graphicId === graphicId)?.slot ?? 'top'
   const shape = known ?? SLOT_FALLBACK[slot]
   const patId = `pat-${graphicId}-${pattern}`
-  const fill = pattern !== 'solid' ? `url(#${patId})` : color
+  const fill = (pattern !== 'solid' && pattern !== 'graphic') ? `url(#${patId})` : color
 
   return (
     <svg
