@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { analyzeColor, isNeutral } from "./index";
+import { analyzeColor, isNeutral, nearestColorName } from "./index";
 
 const rgb = (r: number, g: number, b: number): [number, number, number] => [r, g, b];
 
@@ -29,5 +29,18 @@ describe("isNeutral helper", () => {
   it("agrees with analyzeColor", () => {
     const c = analyzeColor(rgb(31, 42, 68));
     expect(isNeutral(c.lab)).toBe(true);
+  });
+});
+
+describe("nearestColorName", () => {
+  it("names primaries and common menswear colours", () => {
+    expect(nearestColorName([10, 12, 14])).toBe("Black");
+    expect(nearestColorName([250, 250, 250])).toBe("White");
+    expect(nearestColorName([31, 42, 68])).toBe("Navy");
+    expect(nearestColorName([200, 40, 40])).toBe("Red");
+    expect(nearestColorName([240, 230, 205])).toBe("Beige");
+  });
+  it("populates colorName through analyzeColor", () => {
+    expect(analyzeColor([31, 42, 68]).colorName).toBe("Navy");
   });
 });
