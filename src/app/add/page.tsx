@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { wardrobeStore } from "@/lib/wardrobe-store/instance";
 import { ChipSelect } from "@/components/ChipSelect";
-import { ColorPicker } from "@/components/ColorPicker";
+import { ColorIndex } from "@/components/ColorIndex";
 import { Button } from "@/components/Button";
 import { Reveal } from "@/components/Reveal";
 import { GarmentGraphic } from "@/lib/graphics/GarmentGraphic";
@@ -36,14 +36,11 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 export default function AddPage() {
   const router = useRouter();
-  const [file, setFile] = useState<File | null>(null);
-  const [busy, setBusy] = useState(false);
   const [color, setColor] = useState<ItemColor | null>(null);
   const [garmentType, setGarmentType] = useState("t-shirt");
   const [formality, setFormality] = useState<Formality>("casual");
   const [seasons, setSeasons] = useState<Season[]>(["all-season"]);
   const [price, setPrice] = useState<string>("");
-  const [fallback, setFallback] = useState(false);
 
   useEffect(() => {
     const def = GARMENTS[garmentType]
@@ -52,21 +49,6 @@ export default function AddPage() {
       setSeasons(def.defaultSeasons)
     }
   }, [garmentType])
-
-  async function onFile(f: File) {
-    setFile(f);
-    setBusy(true);
-    setFallback(false);
-    try {
-      const { extractItemColor } = await import("@/lib/image-pipeline/pipeline");
-      const { color } = await extractItemColor(f);
-      setColor(color);
-    } catch {
-      setFallback(true);
-    } finally {
-      setBusy(false);
-    }
-  }
 
   async function save() {
     if (!color) return;
@@ -88,8 +70,7 @@ export default function AddPage() {
           Add an item
         </h1>
         <p className="max-w-2xl text-muted-foreground">
-          Upload a photo - the colour is read in your browser and the background removed. Then
-          describe the piece.
+          Pick the colour, describe the piece, and save it to your wardrobe.
         </p>
       </Reveal>
 
@@ -101,21 +82,9 @@ export default function AddPage() {
               {color ? (
                 <GarmentGraphic graphicId={GARMENTS[garmentType].graphicId} color={color.hex} size={140} />
               ) : (
-                <span className="px-4 text-center text-xs text-muted">No image yet</span>
+                <span className="px-4 text-center text-xs text-muted">Select a colour below</span>
               )}
             </div>
-            <label className="w-full cursor-pointer">
-              <span className="block w-full rounded-md border border-border px-4 py-2 text-center text-sm font-medium text-foreground transition-colors hover:bg-surface-hover">
-                {file ? "Choose another photo" : "Choose a photo"}
-              </span>
-              <input
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => e.target.files?.[0] && onFile(e.target.files[0])}
-              />
-            </label>
-            {busy && <p className="text-xs text-muted-foreground">Removing background &amp; reading colour…</p>}
             {color && (
               <p className="flex items-center gap-2 text-sm text-foreground">
                 <span
@@ -126,18 +95,13 @@ export default function AddPage() {
                 <span className="text-muted-foreground">{color.hex}</span>
               </p>
             )}
-            {fallback && file && (
-              <div className="w-full space-y-2">
-                <p className="text-xs text-muted-foreground">
-                  Auto cut-out unavailable - tap the garment to pick its colour.
-                </p>
-                <ColorPicker file={file} onPick={setColor} />
-              </div>
-            )}
           </div>
 
           {/* Details */}
           <div className="space-y-7">
+            <Field label="Colour">
+              <ColorIndex value={color} onChange={setColor} />
+            </Field>
             <Field label="Type">
               {(["top", "bottom", "footwear", "outerwear", "accessory"] as const).map((slot) => {
                 const byCategory = garmentTypesByCategory(slot)

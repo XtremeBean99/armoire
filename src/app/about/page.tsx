@@ -23,7 +23,7 @@ const PRINCIPLES = [
 ];
 
 const STEPS = [
-  "Photograph a garment - the background is removed and the exact colour read, all in your browser.",
+  "Pick the colour from the index and select the garment type - formality and season are set automatically based on what you choose.",
   "Tag its type, formality and season from simple pickers, and an optional price.",
   "Generate colour-coherent outfits. Mark one worn and its pieces drop out of rotation for two generations.",
   "Watch your insights: most-worn colours, cost-per-wear, and the pieces you never reach for.",
