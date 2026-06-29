@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { wardrobeStore } from "@/lib/wardrobe-store/instance";
 import { ChipSelect } from "@/components/ChipSelect";
@@ -8,7 +8,7 @@ import { ColorPicker } from "@/components/ColorPicker";
 import { Button } from "@/components/Button";
 import { Reveal } from "@/components/Reveal";
 import { GarmentGraphic } from "@/lib/graphics/GarmentGraphic";
-import { GARMENTS } from "@/lib/graphics/registry";
+import { GARMENTS, garmentTypesByCategory } from "@/lib/graphics/registry";
 import type { Formality, ItemColor, Season } from "@/lib/types";
 
 const FORMALITIES: { value: Formality; label: string }[] = [
@@ -24,7 +24,6 @@ const SEASONS: { value: Season; label: string }[] = [
   { value: "spring", label: "Spring" },
   { value: "all-season", label: "All-season" },
 ];
-const TYPES = Object.entries(GARMENTS).map(([value, def]) => ({ value, label: def.label }));
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -45,6 +44,14 @@ export default function AddPage() {
   const [seasons, setSeasons] = useState<Season[]>(["all-season"]);
   const [price, setPrice] = useState<string>("");
   const [fallback, setFallback] = useState(false);
+
+  useEffect(() => {
+    const def = GARMENTS[garmentType]
+    if (def) {
+      setFormality(def.defaultFormality)
+      setSeasons(def.defaultSeasons)
+    }
+  }, [garmentType])
 
   async function onFile(f: File) {
     setFile(f);
@@ -132,7 +139,19 @@ export default function AddPage() {
           {/* Details */}
           <div className="space-y-7">
             <Field label="Type">
-              <ChipSelect options={TYPES} value={garmentType} onChange={(v) => setGarmentType(v as string)} />
+              {(["top", "bottom", "footwear", "outerwear", "accessory"] as const).map((slot) => {
+                const byCategory = garmentTypesByCategory(slot)
+                return Object.entries(byCategory).map(([category, types]) => (
+                  <div key={category} className="mb-4">
+                    <p className="text-xs text-muted-foreground mb-2">{category}</p>
+                    <ChipSelect
+                      options={types.map((t) => ({ value: t, label: GARMENTS[t].label }))}
+                      value={garmentType}
+                      onChange={(v) => setGarmentType(v as string)}
+                    />
+                  </div>
+                ))
+              })}
             </Field>
             <Field label="Formality">
               <ChipSelect options={FORMALITIES} value={formality} onChange={(v) => setFormality(v as Formality)} />
