@@ -61,7 +61,11 @@ export function ColorIndex({
               })
             }
             className={`h-8 w-8 rounded-full border-2 transition-transform hover:scale-110 ${
-              selected ? 'border-white scale-110' : 'border-transparent'
+              selected
+                ? s.lab[0] > 85
+                  ? 'border-gray-400 scale-110'
+                  : 'border-white scale-110'
+                : 'border-transparent'
             }`}
             style={{ backgroundColor: s.hex }}
           />

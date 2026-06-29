@@ -24,7 +24,7 @@ const PRINCIPLES = [
 
 const STEPS = [
   "Pick the colour from the index and select the garment type - formality and season are set automatically based on what you choose.",
-  "Tag its type, formality and season from simple pickers, and an optional price.",
+  "Optionally add a price and any custom notes — formality and season are already dialled in.",
   "Generate colour-coherent outfits. Mark one worn and its pieces drop out of rotation for two generations.",
   "Watch your insights: most-worn colours, cost-per-wear, and the pieces you never reach for.",
 ];
