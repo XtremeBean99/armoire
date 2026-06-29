@@ -236,7 +236,51 @@ Each phase becomes its own implementation-plan slice with review checkpoints.
 
 ---
 
-## 12. Open questions / future
+## 12. Execution model — pi multi-agent orchestration
+
+pi executes this build as **three sequential series of agents**, each fanning out into multiple focused subagents, with a human-readable handoff artifact between series, followed by a **final review by Claude**.
+
+```
+Series 1 (Build) ──▶ Series 2 (Review) ──▶ Series 3 (Polish & Fix) ──▶ Final Review (Claude)
+   build agents         reviewer agents        fixer agents               acceptance gate
+```
+
+Each series is a **hard gate**: pi does not begin the next series until the prior series' output artifact exists and the build is green.
+
+### Series 1 — Build (parallel, focused subagents)
+- pi dispatches **one subagent per focused unit** from the §11 work breakdown / §3 modules. Each agent owns a small, single-responsibility slice and delivers it **with its own tests**.
+- **Contracts first:** before fan-out, fix the shared TypeScript interfaces — the §4 data model, the `WardrobeRepository` seam, and the module signatures in §3 — so agents build against stable contracts and don't collide.
+- **Dependency layering** inside the series: the foundation/pure modules (`color`, `graphics`, `outfit-engine`, `insights`) and the store interface build fully in parallel; consumer agents (`wardrobe-store` impl, `ui`, `weather`, `pwa`) build against those contracts.
+- **Definition of done** per agent: the module compiles, its tests pass, it honors its interface, and it respects the §1 positioning constraints (no AI, offline-safe core, free).
+- **Output artifact:** working code + a short per-agent build note (what was built, deviations, assumptions).
+
+### Series 2 — Review (parallel, critical reviewers)
+After Series 1 is green, pi dispatches **multiple independent reviewing agents**, each with a distinct critical lens. They **assess and report only — they do not change code.** Suggested roster:
+1. **Correctness & tests** — logic bugs, edge cases, missing/weak tests, engine determinism.
+2. **Architecture & contracts** — interface adherence, the cloud-ready seam, module boundaries and coupling.
+3. **Positioning compliance** — verifies no-AI, the offline core (weather is the *only* online feature), and the free/no-account constraints actually hold in the code.
+4. **Domain correctness** — neutral detection, color-harmony rules, formality/season/cooldown logic, and the weather adjustments.
+5. **UX, accessibility & visual identity** — empty/error states, recolorable-graphics consistency, responsiveness, a11y.
+
+Each reviewer writes severity-tagged findings (**blocker / major / minor**) with file/line references into a consolidated report.
+- **Output artifact:** `docs/superpowers/reviews/2026-06-29-series-2-review.md`.
+
+### Series 3 — Polish & Fix (parallel fixers)
+- pi dispatches **fixer subagents** that consume the Series 2 report and resolve findings — blockers and majors first, then minors and polish.
+- Each fix re-runs the full test suite; a regression test must accompany every bug fix. Fixers may refactor for clarity but must not break interfaces or the §1 positioning.
+- **Output artifact:** updated code + a **remediation note** mapping every Series 2 finding to its resolution (fixed / won't-fix-with-reason).
+
+### Final Review — Claude (acceptance gate)
+Claude performs the final pass: confirms every blocker/major from Series 2 is resolved, the full test suite and the e2e happy path pass, the §1 positioning holds, and the build matches this spec. Claude issues a **go / no-go** with any residual items. If issues remain, Claude routes a targeted task list back through a Series-3-style fix pass before re-reviewing.
+
+### Orchestration rules
+- Reviewers (Series 2) and fixers (Series 3) must reference **specific findings** — no vague "looks good." Every claim of completion is backed by passing tests, not assertion.
+- Series 1 agents must not start consumer modules until the contracts they depend on are fixed.
+- No series is skipped, even for "simple" modules.
+
+---
+
+## 13. Open questions / future
 
 - **Garment graphics source:** commission/design a custom SVG set vs adapt an existing open-license icon set. Affects phase 2 and visual identity. To resolve before phase 2.
 - **Currency:** single app-level setting (default from locale) for MVP.
