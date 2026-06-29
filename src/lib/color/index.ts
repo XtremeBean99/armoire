@@ -8,3 +8,4 @@ export function analyzeColor(rgb: [number, number, number]): ItemColor {
 }
 
 export { isNeutral, hueAngle, NEUTRAL_CHROMA_MAX, nearestColorName };
+export { colorHarmonyScore } from "./harmony";
