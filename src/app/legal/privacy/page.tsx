@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description:
-    "Armoire privacy policy — how your data stays on your device, with no accounts, no tracking, and no uploads.",
+    "Armoire privacy policy - how your data stays on your device, with no accounts, no tracking, and no uploads.",
 };
 
 export default function PrivacyPage() {
@@ -32,7 +32,7 @@ export default function PrivacyPage() {
 
       <h2>3. Local data</h2>
       <p>
-        Your wardrobe — garments, colours, outfits, and insights — is stored entirely in your
+        Your wardrobe - garments, colours, outfits, and insights - is stored entirely in your
         browser using IndexedDB. That data never leaves your device. You can delete it at any
         time by clearing your browser data for this site.
       </p>
@@ -54,7 +54,7 @@ export default function PrivacyPage() {
       <h2>6. Your rights</h2>
       <p>
         Because Armoire stores no data about you on any server, there is no account to access,
-        correct, or delete — all the data is already under your control on your own device. You
+        correct, or delete - all the data is already under your control on your own device. You
         may contact me with any questions at the address below.
       </p>
 

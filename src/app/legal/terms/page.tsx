@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Terms of Use",
   description:
-    "Armoire terms of use — a free, no-AI, local-first wardrobe builder. Copyright, prohibited uses, and liability.",
+    "Armoire terms of use - a free, no-AI, local-first wardrobe builder. Copyright, prohibited uses, and liability.",
 };
 
 export default function TermsPage() {

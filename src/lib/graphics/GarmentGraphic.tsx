@@ -9,7 +9,7 @@ type PathSet = Record<string, React.ReactNode>;
 // shape groups. Kept geometric and centred for a consistent lookbook.
 const PATHS: PathSet = {
   // ═══════════════════════════════════════════════════════════════════
-  // TOPS — CASUAL
+  // TOPS - CASUAL
   // ═══════════════════════════════════════════════════════════════════
   "t-shirt": (
     <path d="M38 16 L30 20 L17 31 L24 41 L33 36 V84 H67 V36 L76 41 L83 31 L70 20 L62 16 Q50 25 38 16 Z" />
@@ -43,7 +43,7 @@ const PATHS: PathSet = {
   ),
 
   // ═══════════════════════════════════════════════════════════════════
-  // TOPS — SMART / FORMAL SHIRTS
+  // TOPS - SMART / FORMAL SHIRTS
   // ═══════════════════════════════════════════════════════════════════
   "oxford-shirt": (
     <path d="M38 15 L28 19 L20 31 V72 H30 L31 39 V86 H69 V39 L70 72 H80 V31 L72 19 L62 15 L55 23 L50 17 L45 23 Z" />
@@ -75,7 +75,7 @@ const PATHS: PathSet = {
   ),
 
   // ═══════════════════════════════════════════════════════════════════
-  // TOPS — KNITS & SWEATERS
+  // TOPS - KNITS & SWEATERS
   // ═══════════════════════════════════════════════════════════════════
   "jumper": (
     <path d="M37 18 Q50 27 63 18 L74 23 L83 35 L76 47 L69 42 V85 H31 V42 L24 47 L17 35 L26 23 Z" />
@@ -112,7 +112,7 @@ const PATHS: PathSet = {
   ),
 
   // ═══════════════════════════════════════════════════════════════════
-  // TOPS — OUTERWEAR / HOODIES
+  // TOPS - OUTERWEAR / HOODIES
   // ═══════════════════════════════════════════════════════════════════
   "hoodie": (
     <>
@@ -314,7 +314,7 @@ const PATHS: PathSet = {
   ),
 
   // ═══════════════════════════════════════════════════════════════════
-  // ACCESSORIES — HEADWEAR
+  // ACCESSORIES - HEADWEAR
   // ═══════════════════════════════════════════════════════════════════
   "cap": (
     <>
@@ -357,7 +357,7 @@ const PATHS: PathSet = {
   ),
 
   // ═══════════════════════════════════════════════════════════════════
-  // ACCESSORIES — EYEWEAR
+  // ACCESSORIES - EYEWEAR
   // ═══════════════════════════════════════════════════════════════════
   "sunglasses": (
     <>
@@ -380,7 +380,7 @@ const PATHS: PathSet = {
   ),
 
   // ═══════════════════════════════════════════════════════════════════
-  // ACCESSORIES — NECKWEAR
+  // ACCESSORIES - NECKWEAR
   // ═══════════════════════════════════════════════════════════════════
   "scarf": (
     <>
@@ -404,7 +404,7 @@ const PATHS: PathSet = {
   ),
 
   // ═══════════════════════════════════════════════════════════════════
-  // ACCESSORIES — OTHER
+  // ACCESSORIES - OTHER
   // ═══════════════════════════════════════════════════════════════════
   "belt": (
     <>
@@ -570,7 +570,7 @@ export function GarmentGraphic({
         {shape}
       </g>
 
-      {/* Trim overlay — collar, cuffs, placket etc */}
+      {/* Trim overlay - collar, cuffs, placket etc */}
       {hasTrim && (
         <g fill={trimColor} stroke="none">
           {/* Collar */}
@@ -581,7 +581,7 @@ export function GarmentGraphic({
         </g>
       )}
 
-      {/* Graphic pattern — badge / emblem on chest */}
+      {/* Graphic pattern - badge / emblem on chest */}
       {pattern === "graphic" && (
         <g fill={secFill} stroke="none">
           <circle cx="50" cy="45" r="7" />

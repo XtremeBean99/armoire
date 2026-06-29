@@ -5,7 +5,8 @@ import { Inter, Playfair_Display } from "next/font/google";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { CircuitBackground } from "@/components/CircuitBackground";
+import { CircuitBackdrop } from "@/components/CyberSigils";
+import { CircuitMesh } from "@/components/CircuitMesh";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 const playfair = Playfair_Display({
@@ -43,7 +44,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
       <body>
-        <CircuitBackground />
+        <CircuitBackdrop />
+        <CircuitMesh />
         <Script id="sw-register" strategy="afterInteractive">
           {`if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js')})}`}
         </Script>

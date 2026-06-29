@@ -8,7 +8,7 @@ const DENIED_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 function getCoords(): Promise<{ lat: number; lon: number }> {
   return new Promise((resolve, reject) => {
     if (!("geolocation" in navigator)) return reject(new Error("no geolocation"));
-    // Check if permission was previously denied — don't bother retrying
+    // Check if permission was previously denied - don't bother retrying
     if ("permissions" in navigator) {
       navigator.permissions.query({ name: "geolocation" }).then((status) => {
         if (status.state === "denied") return reject(new Error("permission denied"));

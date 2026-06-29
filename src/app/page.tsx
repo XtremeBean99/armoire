@@ -102,7 +102,7 @@ export default function GeneratorPage() {
     clearTimeout(timer);
     void wardrobeStore.getState().unmarkWorn(itemIds);
     setUndoState(null);
-    setStatusMsg("Undone — outfit restored.");
+    setStatusMsg("Undone - outfit restored.");
     // Re-generate to refresh the list
     void generate();
   }
@@ -135,7 +135,7 @@ export default function GeneratorPage() {
           Build a look from what you own.
         </h1>
         <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground">
-          Colour-theory pairings from your wardrobe — no AI, fully offline.
+          Colour-theory pairings from your wardrobe - no AI, fully offline.
           Worn pieces go on cooldown for the next two times you generate outfits.
         </p>
       </Reveal>

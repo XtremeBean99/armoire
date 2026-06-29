@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { ColorWheel } from './ColorWheel'
+import { HexColorPicker } from 'react-colorful'
+import { analyzeColor } from '@/lib/color'
 import type { ItemColor } from '@/lib/types'
 
 const SWATCHES: Array<{
@@ -94,16 +95,23 @@ export function ColorIndex({
     })
   }
 
+  function handlePickerChange(hex: string) {
+    const r = parseInt(hex.slice(1, 3), 16)
+    const g = parseInt(hex.slice(3, 5), 16)
+    const b = parseInt(hex.slice(5, 7), 16)
+    onChange(analyzeColor([r, g, b]))
+  }
+
   return (
     <div className="space-y-4">
-      {/* Color wheel toggle */}
+      {/* Picker toggle */}
       <div className="flex items-center gap-3">
         <button
           type="button"
           onClick={() => setShowWheel(!showWheel)}
           className="text-sm text-muted-foreground hover:text-foreground underline underline-offset-2 decoration-dotted"
         >
-          {showWheel ? 'Hide colour wheel' : 'Show colour wheel'}
+          {showWheel ? 'Hide colour picker' : 'Show colour picker'}
         </button>
         {value && (
           <span className="flex items-center gap-1.5 text-sm text-foreground">
@@ -116,14 +124,16 @@ export function ColorIndex({
         )}
       </div>
 
-      {/* Color wheel */}
+      {/* react-colorful HexColorPicker */}
       {showWheel && (
-        <div className="flex justify-center p-3 rounded-lg border border-border bg-surface">
-          <ColorWheel
-            value={value?.hex ?? '#808080'}
-            onChange={onChange}
-            size={200}
-          />
+        <div className="flex justify-center">
+          <div className="rounded-lg border border-border bg-surface p-3">
+            <HexColorPicker
+              color={value?.hex ?? '#808080'}
+              onChange={handlePickerChange}
+              style={{ width: 200, height: 200 }}
+            />
+          </div>
         </div>
       )}
 

@@ -117,7 +117,7 @@ export default function WardrobePage() {
         {items.length === 0 ? (
           <EmptyState
             title="Your wardrobe is empty"
-            hint="Add a few pieces — a top, a bottom and footwear is enough to start generating outfits."
+            hint="Add a few pieces - a top, a bottom and footwear is enough to start generating outfits."
             action={
               <Link
                 href="/add"

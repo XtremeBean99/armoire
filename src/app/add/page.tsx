@@ -238,7 +238,7 @@ export default function AddPage() {
               </Field>
             )}
 
-            {/* Garment Type — hierarchical */}
+            {/* Garment Type - hierarchical */}
             <Field label="Garment type">
               {/* Slot tabs */}
               <div className="flex flex-wrap gap-2 mb-4">
