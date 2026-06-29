@@ -56,7 +56,7 @@ export default function GeneratorPage() {
           Build a look from what you own.
         </h1>
         <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground">
-          Colour-theory pairings from your wardrobe — no AI, fully offline. Worn outfits drop
+          Colour-theory pairings from your wardrobe - no AI, fully offline. Worn outfits drop
           out of rotation for two generations.
         </p>
       </Reveal>

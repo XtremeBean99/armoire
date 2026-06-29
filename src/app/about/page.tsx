@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 const PRINCIPLES = [
   {
     title: "No AI",
-    body: "Colours come from deterministic colour science (CIE Lab + ΔE2000); outfits from explainable colour-theory rules — complementary, analogous and neutral pairings, matched on formality and season. Every suggestion can show why it works.",
+    body: "Colours come from deterministic colour science (CIE Lab + ΔE2000); outfits from explainable colour-theory rules - complementary, analogous and neutral pairings, matched on formality and season. Every suggestion can show why it works.",
   },
   {
     title: "Works offline",
@@ -18,12 +18,12 @@ const PRINCIPLES = [
   },
   {
     title: "Free",
-    body: "No accounts, no API costs, no subscription. Your wardrobe lives on your device in the browser — nothing is uploaded.",
+    body: "No accounts, no API costs, no subscription. Your wardrobe lives on your device in the browser - nothing is uploaded.",
   },
 ];
 
 const STEPS = [
-  "Photograph a garment — the background is removed and the exact colour read, all in your browser.",
+  "Photograph a garment - the background is removed and the exact colour read, all in your browser.",
   "Tag its type, formality and season from simple pickers, and an optional price.",
   "Generate colour-coherent outfits. Mark one worn and its pieces drop out of rotation for two generations.",
   "Watch your insights: most-worn colours, cost-per-wear, and the pieces you never reach for.",
@@ -39,7 +39,7 @@ export default function AboutPage() {
         </h1>
         <p className="max-w-prose text-lg leading-relaxed text-muted-foreground">
           Armoire is a wardrobe builder for men&apos;s clothing that digitises what you own and
-          builds outfits from it — without any AI, fully offline, and free.
+          builds outfits from it - without any AI, fully offline, and free.
         </p>
       </Reveal>
 

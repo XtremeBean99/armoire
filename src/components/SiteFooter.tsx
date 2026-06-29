@@ -3,7 +3,7 @@ export function SiteFooter() {
     <footer className="relative z-10 mt-24 border-t border-border-subtle">
       <div className="mx-auto flex max-w-container flex-col gap-2 px-6 py-10 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
         <p>
-          <span className="font-serif text-foreground">Armoire</span> — no AI · works
+          <span className="font-serif text-foreground">Armoire</span> - no AI · works
           offline · free.
         </p>
         <a

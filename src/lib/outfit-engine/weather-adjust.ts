@@ -14,7 +14,7 @@ export function isLayerable(outfit: Outfit, weather?: WeatherContext): boolean {
 export function weatherNote(weather?: WeatherContext, hasUmbrella = false): string | undefined {
   if (!weather) return undefined;
   if (weather.rainExpected) {
-    return hasUmbrella ? "Rain likely — your umbrella is included." : "Rain likely — bring an umbrella.";
+    return hasUmbrella ? "Rain likely - your umbrella is included." : "Rain likely - bring an umbrella.";
   }
   return undefined;
 }

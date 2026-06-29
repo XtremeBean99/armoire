@@ -41,7 +41,7 @@ export default function InsightsPage() {
         {items.length === 0 || totalWears === 0 ? (
           <EmptyState
             title="No wear data yet"
-            hint="Add items and mark a few outfits as worn — your most-worn colours, cost-per-wear and unworn pieces will appear here."
+            hint="Add items and mark a few outfits as worn - your most-worn colours, cost-per-wear and unworn pieces will appear here."
             action={
               <Link
                 href="/add"
@@ -120,7 +120,7 @@ export default function InsightsPage() {
             <Reveal delay={0.18}>
               <Panel title={`Never worn (${data.orphans.length})`}>
                 {data.orphans.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">Every piece has been worn — no wardrobe orphans.</p>
+                  <p className="text-sm text-muted-foreground">Every piece has been worn - no wardrobe orphans.</p>
                 ) : (
                   <ul className="flex flex-wrap gap-2">
                     {data.orphans.map((i) => (

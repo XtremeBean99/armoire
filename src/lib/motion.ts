@@ -1,6 +1,6 @@
 import type { Variants, Transition } from "framer-motion";
 
-/** Shared easing — matches the ahmedyhussain.com portfolio. */
+/** Shared easing - matches the ahmedyhussain.com portfolio. */
 export const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const;
 
 export const DURATION = { fast: 0.2, base: 0.35, slow: 0.75 } as const;

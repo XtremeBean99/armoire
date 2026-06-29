@@ -8,7 +8,7 @@ export function buildRationale(outfit: Outfit, layerable: boolean, weatherNote?:
 
   const parts: string[] = [];
   if (accents.length === 0) {
-    parts.push(`An all-neutral palette (${unique(neutrals).join(", ")}) — clean and fail-safe.`);
+    parts.push(`An all-neutral palette (${unique(neutrals).join(", ")}) - clean and fail-safe.`);
   } else if (neutrals.length > 0) {
     parts.push(`${unique(neutrals).join(", ")} anchors the ${unique(accents).join(" & ")} accent${accents.length > 1 ? "s" : ""}.`);
   } else {

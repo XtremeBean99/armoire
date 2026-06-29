@@ -81,7 +81,7 @@ export default function AddPage() {
           Add an item
         </h1>
         <p className="max-w-2xl text-muted-foreground">
-          Upload a photo — the colour is read in your browser and the background removed. Then
+          Upload a photo - the colour is read in your browser and the background removed. Then
           describe the piece.
         </p>
       </Reveal>
@@ -122,7 +122,7 @@ export default function AddPage() {
             {fallback && file && (
               <div className="w-full space-y-2">
                 <p className="text-xs text-muted-foreground">
-                  Auto cut-out unavailable — tap the garment to pick its colour.
+                  Auto cut-out unavailable - tap the garment to pick its colour.
                 </p>
                 <ColorPicker file={file} onPick={setColor} />
               </div>

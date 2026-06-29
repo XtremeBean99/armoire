@@ -4,7 +4,7 @@ import { GARMENTS } from "./registry";
 type PathSet = Record<string, React.ReactNode>;
 
 // Recolorable menswear silhouettes on a 100×100 canvas. Each shape carries no
-// hard-coded fill — the wrapping <g> applies the detected garment colour. Kept
+// hard-coded fill - the wrapping <g> applies the detected garment colour. Kept
 // geometric and centred so a wardrobe of mixed photos reads as one lookbook.
 const PATHS: PathSet = {
   // ── Tops ──────────────────────────────────────────────────────────────
