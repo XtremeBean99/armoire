@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useWardrobe, wardrobeStore } from "@/lib/wardrobe-store/instance";
-import { generateOutfits } from "@/lib/outfit-engine";
+import { runGeneration } from "@/lib/wardrobe-store/generate";
 import { getWeatherContext } from "@/lib/weather/weather";
 import { OutfitCard } from "@/components/OutfitCard";
 import { EmptyState } from "@/components/EmptyState";
@@ -17,9 +17,9 @@ export default function GeneratorPage() {
   useEffect(() => { void wardrobeStore.getState().load(); }, []);
 
   async function generate() {
-    await wardrobeStore.getState().decrementCooldowns();
-    const fresh = wardrobeStore.getState().items;
-    setOutfits(generateOutfits(fresh, { season, weather, seed, count: 5 }));
+    // Generate from current cooldowns, THEN decrement (inside runGeneration),
+    // so worn items stay benched for exactly the next two generations.
+    setOutfits(await runGeneration(wardrobeStore, { season, weather, seed, count: 5 }));
     setSeed((s) => s + 1);
   }
 
