@@ -24,7 +24,7 @@ export function ColorPicker({ file, onPick }: { file: File; onPick: (c: ItemColo
     <canvas
       ref={(el) => { if (el) void draw(el); }}
       onClick={pick}
-      className="cursor-crosshair rounded border"
+      className="w-full cursor-crosshair rounded-md border border-border"
     />
   );
 }

@@ -1,0 +1,28 @@
+import type { Variants, Transition } from "framer-motion";
+
+/** Shared easing — matches the ahmedyhussain.com portfolio. */
+export const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const;
+
+export const DURATION = { fast: 0.2, base: 0.35, slow: 0.75 } as const;
+
+export const fadeInUp: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: { opacity: 1, y: 0 },
+};
+
+export const fadeIn: Variants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1 },
+};
+
+/** Subtle card lift on hover. Pair with whileHover="hover". */
+export const cardHover: Variants = {
+  rest: { y: 0, scale: 1 },
+  hover: { y: -2, scale: 1.01 },
+};
+
+export const springSubtle: Transition = {
+  type: "spring",
+  stiffness: 300,
+  damping: 30,
+};

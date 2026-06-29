@@ -3,40 +3,123 @@ import { GARMENTS } from "./registry";
 
 type PathSet = Record<string, React.ReactNode>;
 
-// Single-fill silhouettes. Each is one <path> with no hard-coded fill.
+// Recolorable menswear silhouettes on a 100×100 canvas. Each shape carries no
+// hard-coded fill — the wrapping <g> applies the detected garment colour. Kept
+// geometric and centred so a wardrobe of mixed photos reads as one lookbook.
 const PATHS: PathSet = {
-  "t-shirt": <path d="M30 20 L45 10 H75 L90 20 L80 35 L72 30 V90 H48 V30 L40 35 Z" />,
-  "polo": <path d="M30 20 L45 10 H75 L90 20 L80 35 L72 30 V90 H48 V30 L40 35 Z M52 28 L55 25 H65 L68 28" />,
-  "oxford-shirt": <path d="M28 18 L44 8 H76 L92 18 L84 38 L72 30 V90 H48 V30 L36 38 Z M52 26 L55 22 H65 L68 26" />,
-  "jumper": <path d="M28 18 L44 10 H76 L92 18 L86 40 V90 H34 V40 Z" />,
-  "hoodie": <path d="M28 18 L44 10 H76 L92 18 L86 40 V90 H34 V40 Z M52 18 Q60 2 68 18" />,
-  "jeans": <path d="M42 15 H78 L82 95 H64 L60 45 L56 95 H38 Z" />,
-  "chinos": <path d="M40 15 H80 L84 95 H60 L58 52 L56 95 H36 Z" />,
-  "shorts": <path d="M42 15 H78 L82 60 H64 L60 55 L56 60 H38 Z" />,
-  "joggers": <path d="M42 15 H78 L82 95 H64 L60 50 L56 95 H38 Z" />,
-  "sneakers": <path d="M20 60 H70 Q85 60 88 72 L88 80 H20 Z" />,
-  "dress-shoes": <path d="M20 62 H74 Q86 62 88 72 L88 80 H20 Z M60 62 L58 58 Q56 52 52 50" />,
-  "boots": <path d="M22 45 H72 Q82 45 84 56 L84 82 H22 Z M72 56 L74 52 Q76 45 78 42" />,
-  "sandals": <path d="M22 68 H68 Q78 68 80 76 L80 82 H22 Z M46 68 L46 62 M56 68 L56 62" />,
-  "jacket": <path d="M28 18 L46 10 H74 L92 18 L84 40 V92 H60 V44 H60 V92 H36 V40 Z" />,
-  "blazer": <path d="M28 18 L44 10 H76 L92 18 L86 38 V92 H60 V42 H60 V92 H34 V38 Z M52 26 L55 22 H65 L68 26" />,
-  "coat": <path d="M26 16 L44 8 H76 L94 16 L88 40 V94 H32 V40 Z" />,
-  "overshirt": <path d="M28 18 L44 10 H76 L92 18 L84 38 L74 32 V90 H46 V32 L36 38 Z" />,
-  "cap": <path d="M36 30 H84 Q86 30 86 38 Q86 44 60 46 Q34 44 34 38 Q34 30 36 30 Z M52 28 L50 18 Q48 12 44 10 H76 Q72 12 70 18 L68 28" />,
-  "beanie": <path d="M38 18 H82 Q86 18 84 26 Q82 46 60 50 Q38 46 36 26 Q34 18 38 18 Z M44 18 Q46 14 60 14 Q74 14 76 18" />,
-  "scarf": <path d="M28 42 H92 L88 58 H78 L74 70 H70 L66 58 H54 L50 70 H46 L42 58 H32 Z" />,
-  "belt": <path d="M24 68 H96 L94 76 H26 Z M54 72 L52 78 H48 L50 72" />,
-  "tie": <path d="M46 12 L54 12 L52 38 L58 50 L50 66 L54 72 L46 72 L50 66 L42 50 L48 38 Z" />,
-  "watch": <path d="M34 44 H44 L42 56 H36 Z M56 44 H66 L64 56 H58 Z M44 42 H56 Q58 42 58 46 V54 Q58 58 56 58 H44 Q42 58 42 54 V46 Q42 42 44 42 Z M50 48 L50 54" />,
-  "umbrella": <path d="M50 18 Q20 22 14 50 H86 Q80 22 50 18 Z M50 50 V86 Q50 92 58 90" />,
+  // ── Tops ──────────────────────────────────────────────────────────────
+  "t-shirt": (
+    <path d="M38 16 L30 20 L17 31 L24 41 L33 36 V84 H67 V36 L76 41 L83 31 L70 20 L62 16 Q50 25 38 16 Z" />
+  ),
+  polo: (
+    <path d="M38 16 L30 20 L17 31 L24 41 L33 36 V84 H67 V36 L76 41 L83 31 L70 20 L62 16 L56 23 L50 18 L44 23 Z" />
+  ),
+  "oxford-shirt": (
+    <path d="M38 15 L28 19 L20 31 V72 H30 L31 39 V86 H69 V39 L70 72 H80 V31 L72 19 L62 15 L55 23 L50 17 L45 23 Z" />
+  ),
+  jumper: (
+    <path d="M37 18 Q50 27 63 18 L74 23 L83 35 L76 47 L69 42 V85 H31 V42 L24 47 L17 35 L26 23 Z" />
+  ),
+  hoodie: (
+    <>
+      <path d="M36 25 Q50 5 64 25 Q50 17 36 25 Z" />
+      <path d="M37 23 Q50 31 63 23 L74 27 L83 39 L76 51 L69 46 V86 H31 V46 L24 51 L17 39 L26 27 Z" />
+    </>
+  ),
+
+  // ── Bottoms ───────────────────────────────────────────────────────────
+  jeans: <path d="M33 16 H67 L66 86 H54 L50 40 L46 86 H34 Z" />,
+  chinos: <path d="M34 16 H66 L63 86 H53 L50 42 L47 86 H37 Z" />,
+  shorts: <path d="M33 16 H67 L65 56 H54 L50 36 L46 56 H35 Z" />,
+  joggers: (
+    <path d="M34 16 H66 L62 80 Q58 87 54 80 L50 44 L46 80 Q42 87 38 80 Z" />
+  ),
+
+  // ── Footwear ──────────────────────────────────────────────────────────
+  sneakers: (
+    <path d="M18 60 L21 50 Q29 44 41 47 L62 51 Q75 53 81 61 L82 67 Q82 71 77 71 H21 Q16 71 18 65 Z" />
+  ),
+  "dress-shoes": (
+    <path d="M20 63 Q27 52 43 53 L66 55 Q80 57 82 65 Q82 69 77 69 H22 Q17 69 20 63 Z" />
+  ),
+  boots: (
+    <path d="M30 28 H47 L48 60 L74 62 Q83 64 83 71 L81 75 H30 Z" />
+  ),
+  sandals: (
+    <>
+      <path d="M22 64 Q50 60 78 64 Q81 71 74 71 H26 Q19 71 22 64 Z" />
+      <path d="M32 64 L45 51 L49 54 L37 66 Z" />
+      <path d="M68 64 L55 51 L51 54 L63 66 Z" />
+    </>
+  ),
+
+  // ── Outerwear (open front) ────────────────────────────────────────────
+  jacket: (
+    <path d="M34 16 L28 20 L17 31 L24 43 L31 38 V84 H48 V30 H52 V84 H69 V38 L76 43 L83 31 L72 20 L66 16 L58 23 L50 29 L42 23 Z" />
+  ),
+  blazer: (
+    <path d="M36 16 L26 22 L19 36 L27 47 L33 41 V84 H47 V41 L50 30 L53 41 V84 H67 V41 L73 47 L81 36 L74 22 L64 16 L50 37 Z" />
+  ),
+  coat: (
+    <path d="M34 14 L27 18 L17 31 L24 44 L31 39 V90 H48 V30 H52 V90 H69 V39 L76 44 L83 31 L73 18 L66 14 L58 21 L50 27 L42 21 Z" />
+  ),
+  overshirt: (
+    <path d="M35 16 L27 20 L20 31 V64 H29 L30 39 V84 H48 V32 H52 V84 H70 V39 L71 64 H80 V31 L73 20 L65 16 L57 23 L50 29 L43 23 Z" />
+  ),
+
+  // ── Accessories ───────────────────────────────────────────────────────
+  cap: (
+    <>
+      <path d="M28 51 Q28 28 50 28 Q72 28 72 51 Z" />
+      <path d="M50 51 L86 57 Q89 59 84 61 L50 59 Z" />
+    </>
+  ),
+  beanie: (
+    <>
+      <path d="M30 55 Q30 26 50 26 Q70 26 70 55 Z" />
+      <path d="M27 55 H73 V63 Q50 67 27 63 Z" />
+    </>
+  ),
+  scarf: (
+    <>
+      <path d="M35 24 Q50 35 65 24 L65 31 Q50 41 35 31 Z" />
+      <path d="M39 31 L45 80 L39 82 L34 33 Z" />
+      <path d="M61 31 L66 33 L61 82 L55 80 Z" />
+    </>
+  ),
+  belt: (
+    <>
+      <path d="M16 46 H84 V56 H16 Z" />
+      <path d="M45 43 H59 V59 H45 Z" />
+    </>
+  ),
+  tie: (
+    <>
+      <path d="M44 17 H56 L58 26 H42 Z" />
+      <path d="M43 27 H57 L54 64 L50 75 L46 64 Z" />
+    </>
+  ),
+  watch: (
+    <>
+      <path d="M43 35 H57 L56 23 H44 Z" />
+      <path d="M43 65 H57 L56 77 H44 Z" />
+      <circle cx="50" cy="50" r="15" />
+    </>
+  ),
+  umbrella: (
+    <>
+      <path d="M50 17 Q23 21 16 49 Q33 41 50 49 Q67 41 84 49 Q77 21 50 17 Z" />
+      <path d="M48 49 H52 V78 Q52 85 44 82 V79 Q49 80 49 76 Z" />
+    </>
+  ),
 };
 
 const SLOT_FALLBACK: Record<string, React.ReactNode> = {
-  top: <rect x="32" y="20" width="48" height="60" rx="6" />,
-  bottom: <rect x="38" y="20" width="38" height="70" rx="4" />,
-  footwear: <rect x="20" y="60" width="68" height="22" rx="8" />,
-  outerwear: <rect x="28" y="16" width="56" height="74" rx="6" />,
-  accessory: <circle cx="50" cy="50" r="26" />,
+  top: <rect x="32" y="20" width="36" height="60" rx="6" transform="translate(0)" />,
+  bottom: <rect x="34" y="18" width="32" height="66" rx="4" />,
+  footwear: <rect x="20" y="56" width="60" height="18" rx="9" />,
+  outerwear: <rect x="30" y="16" width="40" height="68" rx="6" />,
+  accessory: <circle cx="50" cy="50" r="22" />,
 };
 
 export function GarmentGraphic({
@@ -52,8 +135,21 @@ export function GarmentGraphic({
   const slot = Object.values(GARMENTS).find((g) => g.graphicId === graphicId)?.slot ?? "top";
   const shape = known ?? SLOT_FALLBACK[slot];
   return (
-    <svg width={size} height={size} viewBox="0 0 100 100" role="img" aria-label={graphicId}>
-      <g fill={color} stroke="rgba(0,0,0,0.15)" strokeWidth={1}>
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 100 100"
+      role="img"
+      aria-label={graphicId.replace(/-/g, " ")}
+    >
+      {/* Light rim keeps dark garments legible on the dark theme. */}
+      <g
+        fill={color}
+        stroke="rgba(255,255,255,0.16)"
+        strokeWidth={1.25}
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      >
         {shape}
       </g>
     </svg>

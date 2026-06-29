@@ -1,23 +1,39 @@
 "use client";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { wardrobeStore } from "@/lib/wardrobe-store/instance";
 import { ChipSelect } from "@/components/ChipSelect";
 import { ColorPicker } from "@/components/ColorPicker";
+import { Button } from "@/components/Button";
+import { Reveal } from "@/components/Reveal";
 import { GarmentGraphic } from "@/lib/graphics/GarmentGraphic";
 import { GARMENTS } from "@/lib/graphics/registry";
 import type { Formality, ItemColor, Season } from "@/lib/types";
 
 const FORMALITIES: { value: Formality; label: string }[] = [
-  { value: "gym", label: "Gym" }, { value: "casual", label: "Casual" },
-  { value: "smart", label: "Smart" }, { value: "formal", label: "Formal" },
+  { value: "gym", label: "Gym" },
+  { value: "casual", label: "Casual" },
+  { value: "smart", label: "Smart" },
+  { value: "formal", label: "Formal" },
 ];
 const SEASONS: { value: Season; label: string }[] = [
-  { value: "summer", label: "Summer" }, { value: "winter", label: "Winter" },
-  { value: "spring", label: "Spring" }, { value: "autumn", label: "Autumn" },
+  { value: "summer", label: "Summer" },
+  { value: "autumn", label: "Autumn" },
+  { value: "winter", label: "Winter" },
+  { value: "spring", label: "Spring" },
   { value: "all-season", label: "All-season" },
 ];
 const TYPES = Object.entries(GARMENTS).map(([value, def]) => ({ value, label: def.label }));
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="space-y-3">
+      <p className="label-text">{label}</p>
+      {children}
+    </div>
+  );
+}
 
 export default function AddPage() {
   const router = useRouter();
@@ -31,13 +47,15 @@ export default function AddPage() {
   const [fallback, setFallback] = useState(false);
 
   async function onFile(f: File) {
-    setFile(f); setBusy(true); setFallback(false);
+    setFile(f);
+    setBusy(true);
+    setFallback(false);
     try {
       const { extractItemColor } = await import("@/lib/image-pipeline/pipeline");
       const { color } = await extractItemColor(f);
       setColor(color);
     } catch {
-      setFallback(true); // show eyedropper
+      setFallback(true);
     } finally {
       setBusy(false);
     }
@@ -46,35 +64,107 @@ export default function AddPage() {
   async function save() {
     if (!color) return;
     await wardrobeStore.getState().addItem({
-      garmentType, color, formality, seasons,
+      garmentType,
+      color,
+      formality,
+      seasons,
       pricePaid: price ? Number(price) : undefined,
     });
     router.push("/wardrobe");
   }
 
   return (
-    <main className="space-y-4 p-6">
-      <h1 className="text-xl font-semibold">Add an item</h1>
-      <input type="file" accept="image/*" onChange={(e) => e.target.files?.[0] && onFile(e.target.files[0])} />
-      {busy && <p className="text-sm text-neutral-500">Removing background &amp; reading colour…</p>}
-      {fallback && file && <ColorPicker file={file} onPick={setColor} />}
-      {color && (
-        <div className="flex items-center gap-3">
-          <GarmentGraphic graphicId={GARMENTS[garmentType].graphicId} color={color.hex} />
-          <span className="text-sm">{color.colorName} ({color.hex})</span>
+    <div className="py-16 sm:py-20">
+      <Reveal>
+        <p className="label-text mb-5">Add to wardrobe</p>
+        <h1 className="mb-3 font-serif text-4xl font-bold leading-tight text-foreground sm:text-5xl">
+          Add an item
+        </h1>
+        <p className="max-w-2xl text-muted-foreground">
+          Upload a photo — the colour is read in your browser and the background removed. Then
+          describe the piece.
+        </p>
+      </Reveal>
+
+      <Reveal delay={0.08}>
+        <div className="mt-10 grid gap-8 lg:grid-cols-[280px_1fr]">
+          {/* Preview / upload */}
+          <div className="flex flex-col items-center gap-4 rounded-lg border border-border bg-surface p-6">
+            <div className="flex h-44 w-44 items-center justify-center rounded-md border border-border-subtle bg-background">
+              {color ? (
+                <GarmentGraphic graphicId={GARMENTS[garmentType].graphicId} color={color.hex} size={140} />
+              ) : (
+                <span className="px-4 text-center text-xs text-muted">No image yet</span>
+              )}
+            </div>
+            <label className="w-full cursor-pointer">
+              <span className="block w-full rounded-md border border-border px-4 py-2 text-center text-sm font-medium text-foreground transition-colors hover:bg-surface-hover">
+                {file ? "Choose another photo" : "Choose a photo"}
+              </span>
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => e.target.files?.[0] && onFile(e.target.files[0])}
+              />
+            </label>
+            {busy && <p className="text-xs text-muted-foreground">Removing background &amp; reading colour…</p>}
+            {color && (
+              <p className="flex items-center gap-2 text-sm text-foreground">
+                <span
+                  className="inline-block h-3.5 w-3.5 rounded-full border border-white/10"
+                  style={{ backgroundColor: color.hex }}
+                />
+                {color.colorName}
+                <span className="text-muted-foreground">{color.hex}</span>
+              </p>
+            )}
+            {fallback && file && (
+              <div className="w-full space-y-2">
+                <p className="text-xs text-muted-foreground">
+                  Auto cut-out unavailable — tap the garment to pick its colour.
+                </p>
+                <ColorPicker file={file} onPick={setColor} />
+              </div>
+            )}
+          </div>
+
+          {/* Details */}
+          <div className="space-y-7">
+            <Field label="Type">
+              <ChipSelect options={TYPES} value={garmentType} onChange={(v) => setGarmentType(v as string)} />
+            </Field>
+            <Field label="Formality">
+              <ChipSelect options={FORMALITIES} value={formality} onChange={(v) => setFormality(v as Formality)} />
+            </Field>
+            <Field label="Season">
+              <ChipSelect
+                options={SEASONS}
+                value={seasons}
+                onChange={(v) => setSeasons(v as Season[])}
+                multiple
+              />
+            </Field>
+            <Field label="Price (optional)">
+              <div className="flex items-center gap-2">
+                <span className="text-muted-foreground">$</span>
+                <input
+                  inputMode="decimal"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  placeholder="0.00"
+                  className="w-32 rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition-colors placeholder:text-muted focus:border-muted-foreground"
+                />
+              </div>
+            </Field>
+            <div className="pt-2">
+              <Button disabled={!color} onClick={save}>
+                Save item
+              </Button>
+            </div>
+          </div>
         </div>
-      )}
-      <label className="block text-sm font-medium">Type</label>
-      <ChipSelect options={TYPES} value={garmentType} onChange={(v) => setGarmentType(v as string)} />
-      <label className="block text-sm font-medium">Formality</label>
-      <ChipSelect options={FORMALITIES} value={formality} onChange={(v) => setFormality(v as Formality)} />
-      <label className="block text-sm font-medium">Season</label>
-      <ChipSelect options={SEASONS} value={seasons} onChange={(v) => setSeasons(v as Season[])} multiple />
-      <label className="block text-sm font-medium">Price (optional)</label>
-      <input className="rounded border p-1" inputMode="decimal" value={price} onChange={(e) => setPrice(e.target.value)} />
-      <button disabled={!color} onClick={save} className="rounded bg-black px-4 py-2 text-white disabled:opacity-40">
-        Save item
-      </button>
-    </main>
+      </Reveal>
+    </div>
   );
 }

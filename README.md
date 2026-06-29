@@ -4,6 +4,8 @@ A **local-first, installable PWA wardrobe builder for men's clothing**.
 
 Photograph your clothes; Armoire extracts each item's exact color entirely in your browser, you tag the garment type / formality / season, and a **rule-based** engine builds color-coherent outfits from what you actually own. Outfits render as clean recolorable graphics — not your raw photos.
 
+**Live:** [armoire.ahmedyhussain.com](https://armoire.ahmedyhussain.com) — a companion app to [ahmedyhussain.com](https://ahmedyhussain.com), sharing its dark, serif-headed design language.
+
 ### What makes it different
 - **No AI.** Deterministic color science + explainable color-theory rules. Every suggestion can show *why* it works.
 - **Works offline.** After the first load, the core loop (add items, generate outfits, insights) runs with no network.
@@ -40,15 +42,11 @@ npm run build
 
 ## Deployment
 
-```bash
-# Deploy to Vercel
-npx vercel --prod
-```
-
-Or link to a Vercel project:
+Hosted on Vercel and served at **armoire.ahmedyhussain.com**. The Vercel project is
+linked to this GitHub repository, so pushes to `main` deploy automatically.
 
 ```bash
-npx vercel link
+# Manual production deploy (if needed)
 npx vercel --prod
 ```
 

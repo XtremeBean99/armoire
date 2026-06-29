@@ -24,8 +24,10 @@ export function ChipSelect<T extends string>({
           type="button"
           onClick={() => toggle(o.value)}
           className={clsx(
-            "rounded-full border px-3 py-1 text-sm",
-            selected.includes(o.value) ? "bg-black text-white" : "bg-white text-black",
+            "rounded-full border px-3.5 py-1.5 text-sm transition-colors",
+            selected.includes(o.value)
+              ? "border-foreground bg-foreground text-background"
+              : "border-border text-muted-foreground hover:border-muted-foreground/60 hover:text-foreground",
           )}
         >
           {o.label}
