@@ -16,8 +16,42 @@ Photograph your clothes; Armoire extracts each item's exact color entirely in yo
 - Times-worn tracking, optional price, and a **cost-per-wear** insights dashboard
 - Optional, opt-in weather feature: temperature-aware outfits, umbrella prompt on rain, and layerable suggestions for cold-morning/warm-afternoon days
 
-### Status
-Design phase. See [`docs/superpowers/specs/2026-06-29-armoire-design.md`](docs/superpowers/specs/2026-06-29-armoire-design.md) for the full design document.
-
 ### Stack
 Next.js 15 · React 19 · TypeScript · Tailwind · Framer Motion · Dexie (IndexedDB) · Serwist (PWA) · Open-Meteo (optional weather) — deployed on Vercel.
+
+## Getting Started
+
+```bash
+# Install dependencies
+npm install
+
+# Start dev server
+npm run dev
+
+# Run unit tests
+npm test
+
+# Type-check
+npm run type-check
+
+# Production build
+npm run build
+```
+
+## Deployment
+
+```bash
+# Deploy to Vercel
+npx vercel --prod
+```
+
+Or link to a Vercel project:
+
+```bash
+npx vercel link
+npx vercel --prod
+```
+
+## Design
+
+See [`docs/superpowers/specs/2026-06-29-armoire-design.md`](docs/superpowers/specs/2026-06-29-armoire-design.md) for the full design document.
