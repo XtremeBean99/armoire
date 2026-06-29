@@ -9,7 +9,7 @@ import { Button } from "@/components/Button";
 import { Reveal } from "@/components/Reveal";
 import { GarmentGraphic } from "@/lib/graphics/GarmentGraphic";
 import { GARMENTS, garmentTypesByCategory } from "@/lib/graphics/registry";
-import type { Formality, ItemColor, Season } from "@/lib/types";
+import type { Formality, ItemColor, Season, Pattern } from "@/lib/types";
 
 const FORMALITIES: { value: Formality; label: string }[] = [
   { value: "gym", label: "Gym" },
@@ -41,6 +41,7 @@ export default function AddPage() {
   const [formality, setFormality] = useState<Formality>("casual");
   const [seasons, setSeasons] = useState<Season[]>(["all-season"]);
   const [price, setPrice] = useState<string>("");
+  const [pattern, setPattern] = useState<Pattern>("solid");
 
   useEffect(() => {
     const def = GARMENTS[garmentType]
@@ -58,6 +59,7 @@ export default function AddPage() {
       formality,
       seasons,
       pricePaid: price ? Number(price) : undefined,
+      pattern: pattern !== "solid" ? pattern : undefined,
     });
     router.push("/wardrobe");
   }
@@ -80,7 +82,7 @@ export default function AddPage() {
           <div className="flex flex-col items-center gap-4 rounded-lg border border-border bg-surface p-6">
             <div className="flex h-44 w-44 items-center justify-center rounded-md border border-border-subtle bg-background">
               {color ? (
-                <GarmentGraphic graphicId={GARMENTS[garmentType].graphicId} color={color.hex} size={140} />
+                <GarmentGraphic graphicId={GARMENTS[garmentType].graphicId} color={color.hex} pattern={pattern} size={140} />
               ) : (
                 <span className="px-4 text-center text-xs text-muted">Select a colour below</span>
               )}
@@ -101,6 +103,19 @@ export default function AddPage() {
           <div className="space-y-7">
             <Field label="Colour">
               <ColorIndex value={color} onChange={setColor} />
+            </Field>
+            <Field label="Pattern">
+              <ChipSelect
+                options={[
+                  { value: "solid",    label: "Solid" },
+                  { value: "stripe-h", label: "Striped" },
+                  { value: "stripe-v", label: "Pinstripe" },
+                  { value: "graphic",  label: "Graphic" },
+                  { value: "two-tone", label: "Two-tone" },
+                ]}
+                value={pattern}
+                onChange={(v) => setPattern(v as Pattern)}
+              />
             </Field>
             <Field label="Type">
               {(["top", "bottom", "footwear", "outerwear", "accessory"] as const).map((slot) => {

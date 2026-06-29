@@ -260,29 +260,62 @@ const SLOT_FALLBACK: Record<string, React.ReactNode> = {
   accessory: <circle cx="50" cy="50" r="22" />,
 };
 
+function PatternDefs({ id, pattern, color }: { id: string; pattern: string; color: string }) {
+  if (pattern === 'stripe-h') return (
+    <defs>
+      <pattern id={id} x="0" y="0" width="100" height="8" patternUnits="userSpaceOnUse">
+        <rect width="100" height="4" fill={color} opacity={0.9} />
+        <rect y="4" width="100" height="4" fill="rgba(255,255,255,0.18)" />
+      </pattern>
+    </defs>
+  )
+  if (pattern === 'stripe-v') return (
+    <defs>
+      <pattern id={id} x="0" y="0" width="8" height="100" patternUnits="userSpaceOnUse">
+        <rect width="4" height="100" fill={color} opacity={0.9} />
+        <rect x="4" width="4" height="100" fill="rgba(255,255,255,0.18)" />
+      </pattern>
+    </defs>
+  )
+  if (pattern === 'two-tone') return (
+    <defs>
+      <linearGradient id={id} x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="50%" stopColor={color} />
+        <stop offset="50%" stopColor="rgba(255,255,255,0.22)" />
+      </linearGradient>
+    </defs>
+  )
+  return null
+}
+
 export function GarmentGraphic({
   graphicId,
   color,
   size = 96,
+  pattern = 'solid',
 }: {
-  graphicId: string;
-  color: string;
-  size?: number;
+  graphicId: string
+  color: string
+  size?: number
+  pattern?: string
 }) {
-  const known = PATHS[graphicId];
-  const slot = Object.values(GARMENTS).find((g) => g.graphicId === graphicId)?.slot ?? "top";
-  const shape = known ?? SLOT_FALLBACK[slot];
+  const known = PATHS[graphicId]
+  const slot = Object.values(GARMENTS).find((g) => g.graphicId === graphicId)?.slot ?? 'top'
+  const shape = known ?? SLOT_FALLBACK[slot]
+  const patId = `pat-${graphicId}-${pattern}`
+  const fill = pattern !== 'solid' ? `url(#${patId})` : color
+
   return (
     <svg
       width={size}
       height={size}
       viewBox="0 0 100 100"
       role="img"
-      aria-label={graphicId.replace(/-/g, " ")}
+      aria-label={graphicId.replace(/-/g, ' ')}
     >
-      {/* Light rim keeps dark garments legible on the dark theme. */}
+      {pattern !== 'solid' && <PatternDefs id={patId} pattern={pattern} color={color} />}
       <g
-        fill={color}
+        fill={fill}
         stroke="rgba(255,255,255,0.16)"
         strokeWidth={1.25}
         strokeLinejoin="round"
@@ -290,6 +323,12 @@ export function GarmentGraphic({
       >
         {shape}
       </g>
+      {pattern === 'graphic' && (
+        <g fill="rgba(255,255,255,0.35)" stroke="none">
+          <circle cx="50" cy="50" r="8" />
+          <path d="M46 50 L50 44 L54 50 L50 56 Z" fill="rgba(0,0,0,0.3)" />
+        </g>
+      )}
     </svg>
-  );
+  )
 }

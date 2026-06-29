@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
-import { formalityCoherent, availableForSeason, isAvailable } from "./constraints";
+import { describe, it, expect, test } from "vitest";
+import { formalityCoherent, availableForSeason, isAvailable, patternCoherent } from "./constraints";
 import type { WardrobeItem, Formality, Season } from "@/lib/types";
 
 function it2(formality: Formality, seasons: Season[], cooldown = 0): WardrobeItem {
@@ -34,3 +34,25 @@ describe("isAvailable", () => {
     expect(isAvailable(it2("casual", [], 1))).toBe(false);
   });
 });
+
+function makeItem(pattern?: string) {
+  return {
+    id: 'x', garmentType: 't-shirt', slot: 'top' as const, graphicId: 't-shirt',
+    color: { hex: '#fff', rgb: [255,255,255] as [number,number,number], lab: [100,0,0] as [number,number,number], colorName: 'White', hueFamily: 'neutral', isNeutral: true },
+    formality: 'casual' as const, seasons: ['all-season' as const],
+    timesWorn: 0, cooldown: 0, createdAt: 0,
+    pattern: pattern as any,
+  }
+}
+
+test('patternCoherent: allows one patterned item', () => {
+  expect(patternCoherent([makeItem('stripe-h'), makeItem('solid'), makeItem('solid')])).toBe(true)
+})
+
+test('patternCoherent: rejects two patterned items', () => {
+  expect(patternCoherent([makeItem('stripe-h'), makeItem('stripe-v'), makeItem('solid')])).toBe(false)
+})
+
+test('patternCoherent: allows multiple graphic items', () => {
+  expect(patternCoherent([makeItem('graphic'), makeItem('graphic'), makeItem('solid')])).toBe(true)
+})

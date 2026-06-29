@@ -14,3 +14,10 @@ export function availableForSeason(item: WardrobeItem, season: Season | "any"): 
 export function isAvailable(item: WardrobeItem): boolean {
   return item.cooldown === 0;
 }
+
+export function patternCoherent(items: WardrobeItem[]): boolean {
+  const patterned = items.filter(
+    (i) => i.pattern && i.pattern !== 'solid' && i.pattern !== 'graphic'
+  )
+  return patterned.length <= 1
+}

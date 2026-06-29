@@ -1,6 +1,6 @@
 import type { GenerateOptions, Outfit, RankedOutfit, WardrobeItem } from "@/lib/types";
 import { mulberry32 } from "@/lib/rng";
-import { availableForSeason, formalityCoherent, isAvailable } from "./constraints";
+import { availableForSeason, formalityCoherent, isAvailable, patternCoherent } from "./constraints";
 import { coreCombos, groupBySlot, outfitItems } from "./slots";
 import { outfitColorScore } from "./score";
 import { buildRationale } from "./rationale";
@@ -16,7 +16,7 @@ export function generateOutfits(items: WardrobeItem[], options: GenerateOptions 
   const usable = items.filter((i) => isAvailable(i) && availableForSeason(i, season));
   const bySlot = groupBySlot(usable);
 
-  const cores = coreCombos(bySlot).filter((o) => formalityCoherent(outfitItems(o)));
+  const cores = coreCombos(bySlot).filter((o) => formalityCoherent(outfitItems(o)) && patternCoherent(outfitItems(o)));
   const ranked: RankedOutfit[] = [];
 
   for (const core of cores) {

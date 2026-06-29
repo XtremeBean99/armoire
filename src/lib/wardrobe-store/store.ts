@@ -1,6 +1,6 @@
 import { createStore } from "zustand/vanilla";
 import type { WardrobeRepository } from "./repository";
-import type { Formality, ItemColor, Season, WardrobeItem } from "@/lib/types";
+import type { Formality, ItemColor, Pattern, Season, WardrobeItem } from "@/lib/types";
 import { resolveGarment } from "@/lib/graphics/registry";
 
 export interface AddItemInput {
@@ -11,6 +11,7 @@ export interface AddItemInput {
   pricePaid?: number;
   imageBlobId?: string;
   thumbnailBlobId?: string;
+  pattern?: Pattern;
 }
 
 export interface WardrobeState {
@@ -41,6 +42,7 @@ export function createWardrobeStore(repo: WardrobeRepository) {
         garmentType: input.garmentType,
         slot, graphicId,
         color: input.color,
+        pattern: input.pattern,
         formality: input.formality,
         seasons: [...input.seasons],
         pricePaid: input.pricePaid,

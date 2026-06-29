@@ -7,6 +7,8 @@ export const FORMALITY_ORDER: Formality[] = ["gym", "casual", "smart", "formal"]
 
 export type Season = "summer" | "winter" | "spring" | "autumn" | "all-season";
 
+export type Pattern = "solid" | "stripe-h" | "stripe-v" | "graphic" | "two-tone"
+
 export interface ItemColor {
   hex: string;                       // "#rrggbb"
   rgb: [number, number, number];     // 0..255
@@ -24,6 +26,7 @@ export interface WardrobeItem {
   imageBlobId?: string;              // optional reference photo
   thumbnailBlobId?: string;
   color: ItemColor;
+  pattern?: Pattern;
   formality: Formality;
   seasons: Season[];                 // non-empty
   pricePaid?: number;                // optional, app-level currency
