@@ -1,8 +1,8 @@
 # Armoire — Design Document
 
-> **Status:** Approved (design) · **Date:** 2026-06-29
+> **Status:** Built & deployed — live at [armoire.ahmedyhussain.com](https://armoire.ahmedyhussain.com) · **Date:** 2026-06-29
 > **Author:** Ahmed (with Claude)
-> **Intended executor:** pi + subagents
+> **Executor:** pi + subagents (build); Claude (final review, design pass, deploy)
 
 *Armoire* (French for "wardrobe") is a **local-first, installable PWA wardrobe builder for men's clothing**. You photograph your clothes; the app extracts each item's exact color entirely in-browser, you tag garment type / formality / season from pickers, and a **rule-based** engine generates color-coherent outfits from the clothes you actually own. Outfits are displayed as **recolorable garment graphics** (a consistent "paper-doll" look), not the raw photos. Marking an outfit "worn" benches its pieces for the next two generations, increments wear counts, and feeds a personal insights dashboard. An **optional** weather feature can tailor the day's suggestion to the local forecast.
 
@@ -282,7 +282,8 @@ Claude performs the final pass: confirms every blocker/major from Series 2 is re
 
 ## 13. Open questions / future
 
-- **Garment graphics source:** commission/design a custom SVG set vs adapt an existing open-license icon set. Affects phase 2 and visual identity. To resolve before phase 2.
+- **Garment graphics source:** ~~commission/design a custom SVG set vs adapt an existing open-license icon set~~ — **resolved:** a custom recolorable single-fill SVG silhouette set for all 24 menswear types lives in `src/lib/graphics/GarmentGraphic.tsx`.
+- **Visual identity:** **resolved** — the app adopts the ahmedyhussain.com design system (dark zinc palette, Inter + Playfair Display, serif headings, surface cards) so it reads as a companion to the portfolio, which links to it.
 - **Currency:** single app-level setting (default from locale) for MVP.
 - **Color-name dictionary:** curated menswear-oriented palette vs large generic list — decided in the `color` phase.
 - **Weather thresholds:** exact cold/warm/rain cut-offs for `WeatherContext` — tune in phase 7.
