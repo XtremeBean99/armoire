@@ -22,7 +22,14 @@ export function OutfitCard({ outfit, onWear }: { outfit: RankedOutfit; onWear: (
         <div className="flex flex-wrap items-end gap-4">
           {outfit.items.map((i) => (
             <div key={i.id} className="flex flex-col items-center gap-1.5">
-              <GarmentGraphic graphicId={i.graphicId} color={i.color.hex} size={76} />
+              <GarmentGraphic
+                graphicId={i.graphicId}
+                color={i.color.hex}
+                secondaryColor={i.secondaryColor?.hex}
+                trimColor={i.trimColor?.hex}
+                pattern={i.pattern ?? "solid"}
+                size={76}
+              />
               <span className="text-[11px] text-muted-foreground">
                 {GARMENTS[i.garmentType]?.label ?? i.garmentType}
               </span>

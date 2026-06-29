@@ -7,7 +7,7 @@ export const FORMALITY_ORDER: Formality[] = ["gym", "casual", "smart", "formal"]
 
 export type Season = "summer" | "winter" | "spring" | "autumn" | "all-season";
 
-export type Pattern = "solid" | "stripe-h" | "stripe-v" | "graphic" | "two-tone"
+export type Pattern = "solid" | "stripe-h" | "stripe-v" | "graphic" | "two-tone" | "trim"
 
 export interface ItemColor {
   hex: string;                       // "#rrggbb"
@@ -26,6 +26,8 @@ export interface WardrobeItem {
   imageBlobId?: string;              // optional reference photo
   thumbnailBlobId?: string;
   color: ItemColor;
+  secondaryColor?: ItemColor;        // used for stripes, two-tone, graphic
+  trimColor?: ItemColor;             // used for collar/cuff/trim accents
   pattern?: Pattern;
   formality: Formality;
   seasons: Season[];                 // non-empty

@@ -1,0 +1,281 @@
+================================================================================
+CRITICAL COMPREHENSIVE SUGGESTIONS — Armoire (Wardrobe Builder)
+================================================================================
+Date: 29 June 2026
+Project: armoire — Next.js 15 local-first wardrobe builder
+================================================================================
+
+
+================================================================================
+1. SECURITY
+================================================================================
+
+1.1 — ROBOTS.TXT / AI CRAWLER BLOCKING IS INCOMPLETE
+  The `public/robots.txt` blocks only 4 AI crawler bots (GPTBot, CCBot,
+  anthropic-ai, Google-Extended). The `src/app/robots.ts` route blocks 12.
+  These two MUST be kept in sync. Missing from robots.txt: ChatGPT-User,
+  ClaudeBot, Claude-SearchBot, PerplexityBot, Bytespider, Amazonbot,
+  FacebookBot, Applebot-Extended, cohere-ai, omgili.
+
+  ACTION: Align public/robots.txt with src/app/robots.ts. Better yet,
+  configure next.config.ts to serve the dynamic robots.ts route (Next.js
+  serves it automatically at /robots.txt) and DELETE public/robots.txt to
+  avoid the duplication entirely.
+
+1.2 — UID GENERATOR FALLBACK IS NOT SECURE
+  src/lib/wardrobe-store/store.ts, uid() function:
+    `${Date.now()}-${Math.random()}`
+  Math.random() is not cryptographically secure. If crypto.randomUUID is
+  unavailable, fall back to crypto.getRandomValues:
+    `${Date.now()}-${crypto.getRandomValues(new Uint32Array(1))[0]}`
+
+1.3 — NO DATA ENCRYPTION IN INDEXEDDB
+  Prices, garment data, and wear history are stored plaintext in IndexedDB.
+  While this is a client-only app, a user accessing their own data on a
+  shared computer could have their wardrobe inspected. Consider adding an
+  optional encryption layer or at least document this in the Privacy page.
+
+1.4 — WEATHER MODULE PERMISSION-DENIED FLAG IS PERMANENT
+  src/lib/weather/weather.ts stores `armoire.weather.denied` in localStorage
+  with no expiry. If a user accidentally denies geolocation once, they can
+  never recover without clearing storage or toggling browser permissions.
+  Add a TTL (e.g., 7 days) or expose a "retry location permission" button.
+
+1.5 — SW REGISTRATION INLINE SCRIPT
+  src/app/layout.tsx inlines the service worker registration. This is standard
+  PWA practice but the script has no integrity check and runs after interactive.
+  Consider adding a fallback for browsers without serviceWorker support
+  (you have `'serviceWorker' in navigator` — good — but not `navigator.serviceWorker`).
+
+
+================================================================================
+2. UI / UX
+================================================================================
+
+2.1 — WEATHER BUTTON DOES NOT ALLOW DISABLING WEATHER
+  Once weather is loaded, the button changes to show temperature info but
+  clicking it calls `enableWeather()` again (re-fetching). There is no way
+  to turn weather OFF once enabled. Add a "Clear weather" secondary action
+  or a toggle.
+
+2.2 — NO LOADING INDICATOR DURING OUTFIT GENERATION
+  The `generate()` function is async but there is no loading/skeleton state.
+  On slow devices outfit generation could appear frozen. Add a loading
+  spinner or skeleton cards via a `generating` boolean state.
+
+2.3 — NO CONFIRMATION BEFORE REMOVING WARDROBE ITEMS
+  src/app/wardrobe/page.tsx — the remove button instantly deletes an item
+  with no confirmation dialog. This is destructive and irreversible.
+  Add a confirmation modal or at minimum a brief undo toast.
+
+2.4 — "MARK WORN" LACKS UNDO CAPABILITY
+  Once an outfit is marked as worn, it disappears from the grid immediately
+  and cooldowns are decremented. There is no undo. Consider a brief toast
+  with an "Undo" button (~5 seconds) before committing cooldowns.
+
+2.5 — ADD PAGE: GARMENT TYPE SELECTOR LAYOUT IS CONFUSING
+  src/app/add/page.tsx renders `garmentTypesByCategory(slot)` for all 5 slots
+  in a flat loop. Each slot category and its types all display simultaneously,
+  creating a very long vertical layout with repeated "ChipSelect" sections.
+  Consider a tabbed or accordion approach (one category visible at a time).
+
+2.6 — ADD PAGE: NO IMAGE UPLOAD IN THE FLOW
+  The pipeline.ts supports `extractItemColor(file)` for color detection from
+  images, but the Add page has no file upload UI — only the color index
+  picker. Either remove the pipeline code (dead code) or add the upload UX.
+
+2.7 — COLORINDEX / COLORWHEEL MISMATCH
+  The component is named `ColorIndex` (a list/grid of colors) but there is
+  also a `ColorWheel` component. The Add page uses `ColorIndex`. If
+  `ColorWheel` is unused, remove it.
+
+2.8 — PRICE INPUT ACCEPTS UNREASONABLY LARGE VALUES
+  The price field validates for negatives but allows values like
+  999999999.99. Consider capping at a reasonable maximum (e.g., $10,000)
+  and showing a warning for unusual values.
+
+2.9 — ITEM CARDS LACK SLOT VISUAL DIFFERENTIATION
+  In the wardrobe grid, all items look identical aside from the GarmentGraphic
+  and color dot. The slot type (top/bottom/footwear/etc.) is not visually
+  indicated. Consider a subtle slot badge or grouping by slot.
+
+2.10 — NO ACCESSIBLE STATUS UPDATES FOR SCREEN READERS
+  The `aria-live="polite"` on the Save button area is good, but outfit
+  generation results and "mark worn" removals have no ARIA announcements.
+  Add an `aria-live="polite"` region for dynamic content updates.
+
+
+================================================================================
+3. DESIGN
+================================================================================
+
+3.1 — BUTTON COMPONENT LACKS A `size` PROP
+  src/components/Button.tsx — only `variant` is supported. There are places
+  where buttons of different sizes are needed (e.g., small icon buttons
+  for remove). Add `size` ("sm" | "md" | "lg") with corresponding padding.
+
+3.2 — TAILWIND ANIMATION CLASSES VS FRAMER MOTION — DUPLICATION
+  tailwind.config.ts defines `fade-in` and `slide-up` keyframe animations,
+  but the app uses Framer Motion (Reveal component) for entrance animations.
+  These Tailwind animation classes appear unused. Remove them to avoid
+  confusion, or use them consistently for non-interactive CSS animations.
+
+3.3 — NO DESIGN TOKENS FOR ERROR/SUCCESS STATES
+  Error messages use raw Tailwind classes (`text-red-500`, `border-red-800`).
+  Define `colors.error` and `colors.success` in tailwind.config.ts for
+  consistency and easy theme switching.
+
+3.4 — GARMENT GRAPHIC SIZE HARDCODED AT MULTIPLE LOCATIONS
+  `GarmentGraphic` size is hardcoded: `size={88}` in ItemCard, `size={140}`
+  in AddPage, `size={88}` in OutfitCard. Define these in a shared constant
+  or the registry for consistency.
+
+3.5 — FOCUS-VISIBLE STYLE IS GENERIC
+  `:focus-visible { outline: 2px solid rgba(255,255,255,0.6); }` applies
+  to all elements. This can look messy on rounded buttons and cards. Use
+  more specific selectors or the Tailwind `focus-visible:ring` pattern.
+
+
+================================================================================
+4. CODE HYGIENE
+================================================================================
+
+4.1 — TYPESCRIPT STRICT MODE NOT VERIFIED
+  tsconfig.json should include:
+    "compilerOptions": { "strict": true, "noUncheckedIndexedAccess": true }
+  Without strict mode, many potential bugs go undetected.
+
+4.2 — WARDROBE STORE: NO ERROR SURFACING TO UI
+  All store methods return `Promise<void>` and catch nothing. If IndexedDB
+  fails (quota exceeded, private browsing), the UI has no idea. Wrap store
+  calls in try/catch and surface errors through a Zustand state field like
+  `lastError: string | null`.
+
+4.3 — E2E TEST SHOWS FAILURE
+  `test-results/happy-path-add-generate-wear-regenerate/error-context.md`
+  exists, indicating the e2e happy-path test is failing. Investigate and
+  fix, or remove the stale result file.
+
+4.4 — NO PRE-COMMIT HOOKS OR CI CONFIG
+  The project has lint, type-check, test, and e2e scripts but no
+  pre-commit hooks (husky/lint-staged) and no CI configuration. Add a
+  `.github/workflows/ci.yml` to run these on push.
+
+4.5 — .eslintrc.json IS MINIMAL
+  Only extends `next/core-web-vitals`. Consider adding:
+  - `plugin:@typescript-eslint/recommended`
+  - Rules for unused imports, no-console (warn), consistent imports
+  - The eslint config references v9 but the format is legacy .eslintrc.json
+
+4.6 — DEAD CODE / UNUSED COMPONENTS
+  - `ColorWheel.tsx` — not imported anywhere visible
+  - `CircuitBackground.tsx` — imported in layout, need to verify actual usage
+  - `clothing.svg` and `clothing.txt` — reference files that should be cleaned
+    (they are in .gitignore but exist on disk)
+
+4.7 — WEATHER CACHE: NO ERROR FOR STALE DATA
+  The weather cache uses `today()` string comparison. If a user opens the app
+  at 11:59 PM and generates at 12:01 AM, the cache invalidates correctly.
+  However, there's no "last updated at" display — the user doesn't know if
+  the weather data is from 5 minutes or 12 hours ago.
+
+4.8 — INLINE FUNCTION IN JSX PROPS
+  Multi-line inline functions are passed as props:
+    onClick={() => void wardrobeStore.getState().removeItem(item.id)}
+    onChange={(v) => setPattern(v as Pattern)}
+  These create new function references on every render. While not critical
+  for this app's scale, consider `useCallback` for handlers passed to many
+  children.
+
+4.9 — MIXED ERROR HANDLING PATTERNS
+  Some functions return null on error (weather), some throw (pipeline),
+  some do neither (wardrobe store). Standardize on one pattern.
+
+
+================================================================================
+5. WORDING / GRAMMAR
+================================================================================
+
+5.1 — "COLOUR" VS "COLOR" INCONSISTENCY
+  The UI copy uses British spelling "colour" (label, headings), but code
+  uses American "color" (variable names, type names). This is fine as a
+  convention, but README.md mixes both:
+  - "extracts each item's exact color"         (American)
+  - "Colour-theory pairings from your wardrobe" (British)
+  Pick one and standardize the README.
+
+5.2 — "BENCHED" IS JARGON
+  "Worn pieces are benched for 2 generations" — "benched" is sports slang.
+  Consider: "on cooldown" or "rested for 2 rounds."
+
+5.3 — "TWO GENERATIONS" IS AMBIGUOUS
+  "Worn outfits drop out of rotation for two generations." Users don't
+  know what a "generation" is. Say: "...for the next two times you
+  generate outfits."
+
+5.4 — PRIVACY PAGE: "NO IP ADDRESS COLLECTED" IS POTENTIALLY INACCURATE
+  Vercel's edge network and server logs inherently process IP addresses.
+  The statement "I do not collect or log your IP address" is misleading.
+  Say: "I do not store or log your IP address. Vercel, the hosting
+  provider, may process your IP address as part of infrastructure
+  operations consistent with their privacy policy."
+
+5.5 — "MEN'S CLOTHING" SCOPE
+  The app says "wardrobe builder for men's clothing." If the color engine
+  and graphics are gender-agnostic, consider broadening to
+  "for your clothing" to be more inclusive. The garment registry may
+  already support ungendered items.
+
+5.6 — README: TYPO
+  "layerable suggestions for cold-morning/warm-afternoon days" — the term
+  "layerable" is used as an adjective but is not a standard word. Use
+  "layered suggestions" or "outfit layering suggestions."
+
+
+================================================================================
+6. PERFORMANCE / ACCESSIBILITY
+================================================================================
+
+6.1 — NO ACCESSIBLE SKIP LINK TARGET
+  Layout has `<a href="#main">Skip to content</a>` pointing to `<main id="main">`.
+  This is correct but `#main` should be `#main-content` for consistency
+  with the website project.
+
+6.2 — SERVICE WORKER CACHING STRATEGY
+  The Serwist config uses `defaultCache` which is network-first. Consider
+  cache-first for static assets and the garment graphics registry for a
+  faster offline experience.
+
+6.3 — NO IMAGE LAZY LOADING FOR GARMENT GRAPHICS
+  GarmentGraphic renders SVG/Canvas elements; ensure they are not
+  re-rendered unnecessarily. The `Reveal` wrapper adds Framer Motion
+  animations that may trigger layout shifts.
+
+6.4 — LACK OF BUNDLE ANALYSIS
+  @imgly/background-removal is a heavy dependency (~5MB+) that is
+  dynamically imported in pipeline.ts. Verify tree-shaking is working
+  and the chunk is code-split correctly in the production build.
+
+
+================================================================================
+7. LEGAL / COMPLIANCE
+================================================================================
+
+7.1 — NO COOKIE CONSENT FOR WEATHER FEATURE
+  The weather feature uses geolocation and stores data in localStorage.
+  While not a tracking cookie, GDPR/ePrivacy may require disclosure that
+  location data is processed (even if only locally). The privacy page
+  should mention this.
+
+7.2 — TERMS AND PRIVACY PAGES SHOULD CROSS-REFERENCE EACH OTHER
+  The legal pages exist but the footer links to them. The add page and
+  generator page should also have a subtle link to the privacy page
+  near the weather button since that triggers a permission prompt.
+
+7.3 — NO ACCESSIBILITY STATEMENT
+  Add an accessibility section to the About page or a separate page
+  disclosing known limitations and contact for accessibility issues.
+
+================================================================================
+END OF SUGGESTIONS — Armoire
+================================================================================

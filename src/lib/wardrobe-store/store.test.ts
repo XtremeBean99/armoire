@@ -49,4 +49,39 @@ describe("wardrobe store", () => {
     await store.getState().decrementCooldowns();      // stays 0
     expect(store.getState().items[0].cooldown).toBe(0);
   });
+
+  it("unmarkWorn reverses markWorn (undo)", async () => {
+    await store.getState().addItem(baseInput());
+    const id = store.getState().items[0].id;
+    await store.getState().markWorn([id]);
+    expect(store.getState().items[0].cooldown).toBe(2);
+    expect(store.getState().items[0].timesWorn).toBe(1);
+    await store.getState().unmarkWorn([id]);
+    expect(store.getState().items[0].cooldown).toBe(0);
+    expect(store.getState().items[0].timesWorn).toBe(0);
+  });
+
+  it("exposes lastError state and clearError resets it", async () => {
+    expect(store.getState().lastError).toBeNull();
+    // Manually set error (for testing)
+    store.setState({ lastError: "test error" });
+    expect(store.getState().lastError).toBe("test error");
+    store.getState().clearError();
+    expect(store.getState().lastError).toBeNull();
+  });
+
+  it("stores secondaryColor and trimColor when provided", async () => {
+    const secondary = { ...baseInput().color, hex: "#ffffff" };
+    const trim = { ...baseInput().color, hex: "#e11d48" };
+    await store.getState().addItem({
+      ...baseInput(),
+      secondaryColor: secondary,
+      trimColor: trim,
+      pattern: "two-tone",
+    });
+    const item = store.getState().items[0];
+    expect(item.secondaryColor?.hex).toBe("#ffffff");
+    expect(item.trimColor?.hex).toBe("#e11d48");
+    expect(item.pattern).toBe("two-tone");
+  });
 });

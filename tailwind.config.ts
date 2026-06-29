@@ -19,6 +19,10 @@ const config: Config = {
         "muted-foreground": "#a1a1aa",
         surface: "#111113",
         "surface-hover": "#18181b",
+        error: "#ef4444",
+        "error-muted": "#7f1d1d",
+        success: "#22c55e",
+        "success-muted": "#14532d",
       },
       maxWidth: {
         container: "72rem",

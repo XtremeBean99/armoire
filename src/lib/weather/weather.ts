@@ -3,6 +3,7 @@ import { fetchForecast, toWeatherContext } from "./openMeteo";
 
 const CACHE_KEY = "armoire.weather";
 const PERMISSION_DENIED_KEY = "armoire.weather.denied";
+const DENIED_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 function getCoords(): Promise<{ lat: number; lon: number }> {
   return new Promise((resolve, reject) => {
@@ -17,7 +18,7 @@ function getCoords(): Promise<{ lat: number; lon: number }> {
       (pos) => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
       (err) => {
         if (err.code === err.PERMISSION_DENIED) {
-          try { localStorage.setItem(PERMISSION_DENIED_KEY, "1"); } catch { /* ignore */ }
+          try { localStorage.setItem(PERMISSION_DENIED_KEY, String(Date.now())); } catch { /* ignore */ }
         }
         reject(err);
       },
@@ -27,7 +28,20 @@ function getCoords(): Promise<{ lat: number; lon: number }> {
 }
 
 export function wasWeatherDenied(): boolean {
-  try { return localStorage.getItem(PERMISSION_DENIED_KEY) === "1"; } catch { return false; }
+  try {
+    const raw = localStorage.getItem(PERMISSION_DENIED_KEY);
+    if (!raw) return false;
+    const ts = parseInt(raw, 10);
+    if (Date.now() - ts > DENIED_TTL_MS) {
+      localStorage.removeItem(PERMISSION_DENIED_KEY);
+      return false;
+    }
+    return true;
+  } catch { return false; }
+}
+
+export function clearWeatherDenied(): void {
+  try { localStorage.removeItem(PERMISSION_DENIED_KEY); } catch { /* ignore */ }
 }
 
 export async function getWeatherContext(): Promise<WeatherContext | null> {

@@ -45,6 +45,13 @@
     border-radius: 2px;
   }
 
+  /* Buttons use ring instead of outline for cleaner rounded shapes */
+  button:focus-visible,
+  [role="button"]:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6);
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,

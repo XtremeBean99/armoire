@@ -8,8 +8,8 @@ import { ColorIndex } from "@/components/ColorIndex";
 import { Button } from "@/components/Button";
 import { Reveal } from "@/components/Reveal";
 import { GarmentGraphic } from "@/lib/graphics/GarmentGraphic";
-import { GARMENTS, garmentTypesByCategory } from "@/lib/graphics/registry";
-import type { Formality, ItemColor, Season, Pattern } from "@/lib/types";
+import { GARMENTS, garmentTypesBySubcategory } from "@/lib/graphics/registry";
+import type { Formality, ItemColor, Season, Pattern, Slot } from "@/lib/types";
 
 const FORMALITIES: { value: Formality; label: string }[] = [
   { value: "gym", label: "Gym" },
@@ -25,6 +25,23 @@ const SEASONS: { value: Season; label: string }[] = [
   { value: "all-season", label: "All-season" },
 ];
 
+const SLOTS: { value: Slot; label: string }[] = [
+  { value: "top", label: "Tops" },
+  { value: "bottom", label: "Bottoms" },
+  { value: "footwear", label: "Footwear" },
+  { value: "outerwear", label: "Outerwear" },
+  { value: "accessory", label: "Accessories" },
+];
+
+const PATTERN_OPTIONS: { value: Pattern; label: string }[] = [
+  { value: "solid",    label: "Solid" },
+  { value: "stripe-h", label: "Horizontal stripe" },
+  { value: "stripe-v", label: "Vertical stripe" },
+  { value: "graphic",  label: "Graphic / logo" },
+  { value: "two-tone", label: "Two-tone" },
+  { value: "trim",     label: "Contrast trim" },
+];
+
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="space-y-3">
@@ -37,7 +54,10 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 export default function AddPage() {
   const router = useRouter();
   const [color, setColor] = useState<ItemColor | null>(null);
+  const [secondaryColor, setSecondaryColor] = useState<ItemColor | null>(null);
+  const [trimColor, setTrimColor] = useState<ItemColor | null>(null);
   const [garmentType, setGarmentType] = useState("t-shirt");
+  const [activeSlot, setActiveSlot] = useState<Slot>("top");
   const [formality, setFormality] = useState<Formality>("casual");
   const [seasons, setSeasons] = useState<Season[]>(["all-season"]);
   const [price, setPrice] = useState<string>("");
@@ -45,17 +65,48 @@ export default function AddPage() {
   const [seasonError, setSeasonError] = useState<string | null>(null);
   const [pattern, setPattern] = useState<Pattern>("solid");
 
+  // Resolve current garment
+  const currentDef = GARMENTS[garmentType];
+
+  // When slot changes, pick first garment of that slot
   useEffect(() => {
-    const def = GARMENTS[garmentType]
-    if (def) {
-      setFormality(def.defaultFormality)
-      setSeasons(def.defaultSeasons)
+    const groups = garmentTypesBySubcategory(activeSlot);
+    if (groups.length > 0 && groups[0].types.length > 0) {
+      const firstType = groups[0].types[0];
+      setGarmentType(firstType);
+      const def = GARMENTS[firstType];
+      if (def) {
+        setFormality(def.defaultFormality);
+        setSeasons(def.defaultSeasons);
+      }
     }
-  }, [garmentType])
+  }, [activeSlot]);
+
+  // When garment changes, reset defaults
+  useEffect(() => {
+    if (currentDef) {
+      setFormality(currentDef.defaultFormality);
+      setSeasons(currentDef.defaultSeasons);
+    }
+  }, [garmentType]);
+
+  // Reset secondary/trim colors when pattern changes to something that doesn't need them
+  useEffect(() => {
+    if (pattern === "solid" || pattern === "trim") {
+      setSecondaryColor(null);
+    }
+  }, [pattern]);
+
+  const showSecondaryColor =
+    pattern === "stripe-h" ||
+    pattern === "stripe-v" ||
+    pattern === "graphic" ||
+    pattern === "two-tone";
+
+  const showTrimColor = pattern === "trim";
 
   async function save() {
     if (!color) return;
-    // Validate price
     if (price.trim() !== "") {
       const n = Number(price);
       if (!Number.isFinite(n) || n < 0) {
@@ -63,7 +114,6 @@ export default function AddPage() {
         return;
       }
     }
-    // Require at least one season
     if (seasons.length === 0) {
       setSeasonError("Select at least one season.");
       return;
@@ -71,6 +121,8 @@ export default function AddPage() {
     await wardrobeStore.getState().addItem({
       garmentType,
       color,
+      secondaryColor: (showSecondaryColor && secondaryColor) ? secondaryColor : undefined,
+      trimColor: (showTrimColor && trimColor) ? trimColor : undefined,
       formality,
       seasons,
       pricePaid: price.trim() ? Number(price) : undefined,
@@ -78,6 +130,8 @@ export default function AddPage() {
     });
     router.push("/wardrobe");
   }
+
+  const subcategoryGroups = garmentTypesBySubcategory(activeSlot);
 
   return (
     <div className="py-16 sm:py-20">
@@ -87,69 +141,151 @@ export default function AddPage() {
           Add an item
         </h1>
         <p className="max-w-2xl text-muted-foreground">
-          Pick the colour, describe the piece, and save it to your wardrobe.
+          Pick the garment, choose colours and patterns, then save to your wardrobe.
         </p>
       </Reveal>
 
       <Reveal delay={0.08}>
-        <div className="mt-10 grid gap-8 lg:grid-cols-[280px_1fr]">
-          {/* Preview / upload */}
+        <div className="mt-10 grid gap-8 lg:grid-cols-[300px_1fr]">
+          {/* Preview */}
           <div className="flex flex-col items-center gap-4 rounded-lg border border-border bg-surface p-6">
-            <div className="flex h-44 w-44 items-center justify-center rounded-md border border-border-subtle bg-background">
+            <div className="flex h-48 w-48 items-center justify-center rounded-md border border-border-subtle bg-background">
               {color ? (
-                <GarmentGraphic graphicId={GARMENTS[garmentType].graphicId} color={color.hex} pattern={pattern} size={140} />
+                <GarmentGraphic
+                  graphicId={currentDef?.graphicId ?? "t-shirt"}
+                  color={color.hex}
+                  secondaryColor={secondaryColor?.hex}
+                  trimColor={trimColor?.hex}
+                  pattern={pattern}
+                  size={150}
+                />
               ) : (
-                <span className="px-4 text-center text-xs text-muted">Select a colour below</span>
+                <span className="px-4 text-center text-xs text-muted">
+                  Select a colour below
+                </span>
               )}
             </div>
             {color && (
-              <p className="flex items-center gap-2 text-sm text-foreground">
-                <span
-                  className="inline-block h-3.5 w-3.5 rounded-full border border-white/10"
-                  style={{ backgroundColor: color.hex }}
-                />
-                {color.colorName}
-                <span className="text-muted-foreground">{color.hex}</span>
-              </p>
+              <div className="flex flex-col items-center gap-1">
+                <p className="flex items-center gap-2 text-sm text-foreground">
+                  <span
+                    className="inline-block h-3.5 w-3.5 rounded-full border border-white/10"
+                    style={{ backgroundColor: color.hex }}
+                  />
+                  {color.colorName || color.hex}
+                  <span className="text-muted-foreground">{color.hex}</span>
+                </p>
+                {secondaryColor && (
+                  <p className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <span
+                      className="inline-block h-3 w-3 rounded-full border border-white/10"
+                      style={{ backgroundColor: secondaryColor.hex }}
+                    />
+                    {secondaryColor.colorName || secondaryColor.hex} · secondary
+                  </p>
+                )}
+                {trimColor && (
+                  <p className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <span
+                      className="inline-block h-3 w-3 rounded-full border border-white/10"
+                      style={{ backgroundColor: trimColor.hex }}
+                    />
+                    {trimColor.colorName || trimColor.hex} · trim
+                  </p>
+                )}
+                <p className="text-xs text-muted-foreground mt-1">
+                  {currentDef?.label ?? garmentType} · {formality}
+                </p>
+              </div>
             )}
           </div>
 
           {/* Details */}
           <div className="space-y-7">
-            <Field label="Colour">
-              <ColorIndex value={color} onChange={setColor} />
+            {/* Primary Colour */}
+            <Field label="Primary colour">
+              <ColorIndex value={color} onChange={setColor} label="Primary" />
             </Field>
+
+            {/* Pattern */}
             <Field label="Pattern">
               <ChipSelect
-                options={[
-                  { value: "solid",    label: "Solid" },
-                  { value: "stripe-h", label: "Striped" },
-                  { value: "stripe-v", label: "Pinstripe" },
-                  { value: "graphic",  label: "Graphic" },
-                  { value: "two-tone", label: "Two-tone" },
-                ]}
+                options={PATTERN_OPTIONS}
                 value={pattern}
                 onChange={(v) => setPattern(v as Pattern)}
               />
             </Field>
-            <Field label="Type">
-              {(["top", "bottom", "footwear", "outerwear", "accessory"] as const).map((slot) => {
-                const byCategory = garmentTypesByCategory(slot)
-                return Object.entries(byCategory).map(([category, types]) => (
-                  <div key={category} className="mb-4">
-                    <p className="text-xs text-muted-foreground mb-2">{category}</p>
+
+            {/* Secondary Colour (shown for stripe/graphic/two-tone) */}
+            {showSecondaryColor && (
+              <Field label="Secondary colour">
+                <ColorIndex
+                  value={secondaryColor}
+                  onChange={setSecondaryColor}
+                  label="Secondary"
+                />
+              </Field>
+            )}
+
+            {/* Trim Colour */}
+            {showTrimColor && (
+              <Field label="Trim colour (collar, cuffs)">
+                <ColorIndex
+                  value={trimColor}
+                  onChange={setTrimColor}
+                  label="Trim"
+                />
+              </Field>
+            )}
+
+            {/* Garment Type — hierarchical */}
+            <Field label="Garment type">
+              {/* Slot tabs */}
+              <div className="flex flex-wrap gap-2 mb-4">
+                {SLOTS.map((s) => (
+                  <button
+                    key={s.value}
+                    type="button"
+                    onClick={() => setActiveSlot(s.value)}
+                    className={`rounded-md border px-4 py-2 text-sm font-medium transition-colors ${
+                      activeSlot === s.value
+                        ? "border-foreground bg-foreground text-background"
+                        : "border-border text-muted-foreground hover:border-muted-foreground/60 hover:text-foreground"
+                    }`}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Subcategory → garment grid */}
+              <div className="space-y-4 max-h-80 overflow-y-auto pr-2">
+                {subcategoryGroups.map(({ subcategory, types }) => (
+                  <div key={subcategory}>
+                    <p className="text-xs text-muted-foreground mb-2 font-medium uppercase tracking-wider">
+                      {subcategory}
+                    </p>
                     <ChipSelect
-                      options={types.map((t) => ({ value: t, label: GARMENTS[t].label }))}
+                      options={types.map((t) => ({
+                        value: t,
+                        label: GARMENTS[t].label,
+                      }))}
                       value={garmentType}
                       onChange={(v) => setGarmentType(v as string)}
                     />
                   </div>
-                ))
-              })}
+                ))}
+              </div>
             </Field>
+
             <Field label="Formality">
-              <ChipSelect options={FORMALITIES} value={formality} onChange={(v) => setFormality(v as Formality)} />
+              <ChipSelect
+                options={FORMALITIES}
+                value={formality}
+                onChange={(v) => setFormality(v as Formality)}
+              />
             </Field>
+
             <Field label="Season">
               <ChipSelect
                 options={SEASONS}
@@ -161,15 +297,19 @@ export default function AddPage() {
                 multiple
               />
               {seasonError && (
-                <p role="alert" className="text-xs text-red-500">{seasonError}</p>
+                <p role="alert" className="text-xs text-red-500">
+                  {seasonError}
+                </p>
               )}
             </Field>
+
             <Field label="Price (optional)">
               <div className="flex items-center gap-2">
                 <span className="text-muted-foreground">$</span>
                 <input
                   type="number"
                   min="0"
+                  max="10000"
                   step="0.01"
                   value={price}
                   onChange={(e) => {
@@ -183,9 +323,12 @@ export default function AddPage() {
                 />
               </div>
               {priceError && (
-                <p id="price-error" role="alert" className="text-xs text-red-500">{priceError}</p>
+                <p id="price-error" role="alert" className="text-xs text-red-500">
+                  {priceError}
+                </p>
               )}
             </Field>
+
             <div className="pt-2" aria-live="polite">
               <Button disabled={!color} onClick={save}>
                 Save item
